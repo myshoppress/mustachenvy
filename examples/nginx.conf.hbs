@@ -1,0 +1,72 @@
+error_log syslog:server=unix:/dev/log {{default NGINX_LOG_LEVEL 'error'}};
+access_log syslog:server=unix:/dev/log,facility=local7,severity=info,tag=nginx combined;
+
+upstream php {
+    server unix:/var/run/php/php-fpm.sock;
+}
+
+{{#*inline serverConf}}
+
+root /srv/www/current/web;
+index index.php;
+rewrite ^/(wp-.*.php)$ /wp/$1 last;
+rewrite ^/(wp-(content|admin|includes).*) /wp/$1 last;
+
+location ~* /app/uploads/.*.php$ {
+    deny all;
+}
+
+location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+}
+
+location /wp/wp-content/uploads {
+    try_files $uri $uri/ =404;
+}
+
+location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+}
+
+
+location / {
+    # This is cool because no php is touched for static content.
+    # include the "?$args" part so non-default permalinks doesn't break when using query string
+    try_files $uri $uri/ /index.php?$args;
+}
+
+location = /status {
+    access_log off;
+    include fastcgi_params;
+    fastcgi_pass php;
+}
+
+location ~ \.php$ {
+    include fastcgi.conf;
+    fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+    fastcgi_param DOCUMENT_ROOT $realpath_root;
+    fastcgi_intercept_errors on;
+    fastcgi_pass php;
+}
+
+location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+    expires max;
+    log_not_found off;
+}
+
+{{/inline}}
+
+server {
+    {{> serverConf }}
+}
+
+server {
+    listen 443 http2 ssl;
+    {{> serverConf }}
+}
+
+
+

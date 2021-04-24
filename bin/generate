@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use MyShoppress\DevOp\ConfTemplate\InputParser;
+use MyShoppress\DevOp\ConfTemplate\OutputHandler;
+use MyShoppress\DevOp\ConfTemplate\Renderer;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+(new SingleCommandApplication)
+    ->setName('Generate')
+    ->addArgument("values", InputArgument::IS_ARRAY,"Values in format of KEY1=VALUE1 KEY2=VALUE2 or an array of env files. If none given ENV variables are used instead", null)
+    ->addOption('template-file','f',InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file')
+    ->addOption('output','o', InputOption::VALUE_OPTIONAL,'Output file. If none given it will output to stdout. If a directory is given. The file name will be guessed from the input file name.')
+    ->setCode(function(InputInterface  $input, OutputInterface  $output ){
+        $style = new SymfonyStyle($input, $output);
+        $vars = $input->getArgument('values');
+        if ( empty($vars) ) {
+            $vars = $_SERVER;
+        } else {
+            $vars = InputParser::parseEnv($vars);
+        }
+        $templateFile = $input->getOption('template-file');
+        if ( !is_file($templateFile) ) {
+            throw new UnexpectedValueException("Template file can not be empty");
+        }
+        $template = file_get_contents($input->getOption('template-file'));
+        $renderer = new Renderer();
+        $data = $renderer->render($template, $vars);
+        $outputFile = $input->getOption('output');
+        if ( empty($outputFile) ) {
+            $outputFile = 'php://stdout';
+        }
+        elseif ( is_dir($outputFile) || $outputFile === '1' ) {
+            $outputDirectory = $outputFile === '1' ? dirname($templateFile) : $outputFile;
+            $name = pathinfo($templateFile, PATHINFO_FILENAME);
+            $outputFile = $outputDirectory."/".$name;
+        }
+        OutputHandler::output($outputFile, $data);
+    })
+    ->run();

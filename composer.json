@@ -1,0 +1,48 @@
+{
+  "name": "myshoppress/conf-template",
+  "description": "Simple templating engine for generating conf files from their templates during DevOps. Similar to Ansible using Jinja2",
+  "require": {
+    "zordius/lightncandy": "^1.2",
+    "symfony/console": "^5.2",
+    "webmozart/assert": "^1.10"
+  },
+  "require-dev": {
+    "php" : "^7.4",
+    "phpcompatibility/php-compatibility": "^9.3",
+    "squizlabs/php_codesniffer": "^3.5.2",
+    "slevomat/coding-standard": "dev-master",
+    "roave/security-advisories": "dev-master",
+    "phpstan/phpstan": "^0.12.84",
+    "phpstan/extension-installer": "^1.1",
+    "phpstan/phpstan-strict-rules": "^0.12.9",
+    "phpstan/phpstan-webmozart-assert": "^0.12.12",
+    "phpunit/phpunit": "^9.5"
+  },
+  "bin": [
+    ""
+  ],
+  "autoload": {
+    "psr-4": {
+      "MyShoppress\\DevOp\\ConfTemplate\\" : "./src"
+    }
+  },
+  "scripts": {
+    "phpcs": ["phpcs -s -p --standard=./phpcs.xml"],
+    "phpcsfix": ["phpcbf -s -p --standard=./phpcs.xml"],
+    "phpstan" : [
+      "phpstan analyze"
+    ],
+    "review" : [
+      "@phpcsfix" ,"@phpstan","@phpcs"
+    ],
+    "phpunit" : [
+      "phpunit --no-coverage"
+    ],
+    "test" : [
+      "@phpcsfix" ,
+      "@phpstan",
+      "@phpcs",
+      "@phpunit"
+    ]
+  }
+}

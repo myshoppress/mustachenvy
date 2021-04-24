@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="ShoppressIntercom" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+	<exclude-pattern>./vendor</exclude-pattern>
+	<file>./src</file>
+	<file>./tests</file>
+	<arg value="sp" />
+	<arg name="colors"/>
+	<arg name="parallel" value="20"/>
+	<arg name="extensions" value="php"/>
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibility" />
+	<rule ref="SlevomatCodingStandard">
+		<exclude name="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly" />
+		<exclude name="SlevomatCodingStandard.Commenting.RequireOneLineDocComment" />
+		<exclude name="SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment" />
+		<exclude name="SlevomatCodingStandard.Files.TypeNameMatchesFileName" />
+
+		<exclude name="SlevomatCodingStandard.Numbers.DisallowNumericLiteralSeparator" />
+		<exclude name="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration" />
+		<exclude name="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall" />
+		<exclude name="SlevomatCodingStandard.ControlStructures.RequireYodaComparison" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousErrorNaming" />
+		<exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
+		<exclude name="SlevomatCodingStandard.Files.FunctionLength" />
+		<exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces" />
+		<exclude name="SlevomatCodingStandard.Functions.UnusedParameter" />
+		<exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators" />
+		<exclude name="SlevomatCodingStandard.Functions.DisallowArrowFunction.DisallowedArrowFunction" />
+		<exclude name="SlevomatCodingStandard.ControlStructures.NewWithParentheses" />
+		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation" />
+		<exclude name="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint" />
+	</rule>
+
+
+</ruleset>
