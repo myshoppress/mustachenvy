@@ -19,7 +19,8 @@ class Renderer
     {
         $this->compileFlags =
             LightnCandy::FLAG_ERROR_EXCEPTION |
-            LightnCandy::FLAG_RUNTIMEPARTIAL
+            LightnCandy::FLAG_RUNTIMEPARTIAL |
+            LightnCandy::FLAG_NOESCAPE
         ;
         $this->registerHelper('default', static function(...$args){
             \array_pop($args);

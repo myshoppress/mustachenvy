@@ -40,7 +40,7 @@ class InputParser
                 continue;
             }
 
-            $vars[$matches['key']] = $matches['value'];
+            $vars[$matches['key']] = \trim($matches['value'],"\"\'");
         }
 
         return $vars;

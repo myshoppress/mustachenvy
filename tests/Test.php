@@ -13,8 +13,10 @@ class Test extends TestCase
 
     public function testInput(): void
     {
-        $array = InputParser::parseEnv("KEY1=123 Y=123");
+        $array = InputParser::parseEnv(["KEY1=VALUE1", "KEY2=\"VALUE 2\"", "./examples/build.env"]);
         self::assertArrayHasKey('KEY1', $array);
+        self::assertCount(4, $array);
+
     }
 
     public function testRenderer(): void
