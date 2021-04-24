@@ -1,6 +1,7 @@
 {
   "name": "myshoppress/conf-template",
   "description": "Simple templating engine for generating conf files from their templates during DevOps. Similar to Ansible using Jinja2",
+  "license": "MIT",
   "require": {
     "zordius/lightncandy": "^1.2",
     "symfony/console": "^5.2",
