@@ -1,5 +1,5 @@
 {
   "main": "bin/generate",
-  "output": "./dist/conf-template",
+  "output": "./dist/tmpl",
   "chmod":"0700"
 }
