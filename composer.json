@@ -34,7 +34,7 @@
       "phpstan analyze"
     ],
     "review" : [
-      "@phpcsfix" ,"@phpstan","@phpcs"
+      "phpcbf -s -p --standard=./phpcs.xml || true" ,"@phpstan", "@phpcs"
     ],
     "phpunit" : [
       "phpunit --no-coverage"

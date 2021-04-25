@@ -1,5 +1,5 @@
 {
   "main": "bin/generate",
-  "output": "./dist/template",
+  "output": "./dist/conf-template",
   "chmod":"0700"
 }

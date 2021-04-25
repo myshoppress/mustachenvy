@@ -6,6 +6,7 @@ require __DIR__.'/../vendor/autoload.php';
 use MyShoppress\DevOp\ConfTemplate\InputParser;
 use MyShoppress\DevOp\ConfTemplate\OutputHandler;
 use MyShoppress\DevOp\ConfTemplate\Renderer;
+use MyShoppress\DevOp\ConfTemplate\TemplateFiles;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,24 +16,32 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 (new SingleCommandApplication)
     ->setName('Generate')
-    ->addArgument("values", InputArgument::IS_ARRAY,"Values in format of KEY1=VALUE1 KEY2=VALUE2 or an array of env files. If none given ENV variables are used instead", null)
-    ->addOption('template-file','f',InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file')
-    ->addOption('output','o', InputOption::VALUE_OPTIONAL,'Output file. If none given it will output to stdout. If a directory is given. The file name will be guessed from the input file name.')
+    ->addArgument("values", InputArgument::IS_ARRAY,"Key value pairs in format of KEY=VALUE. These values will overwrite ENV or values from input file", null)
+    ->addOption('template-file','f',InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
+    ->addOption('input-file','i',InputOption::VALUE_OPTIONAL,'Input file')
+    ->addOption('input-section','s',InputOption::VALUE_OPTIONAL,'Only use the values in input file at section <SECTION>')
+    ->addOption('output','o', InputOption::VALUE_OPTIONAL,'Output file. If none given it will output to stdout. If a directory is given. The file name will be guessed from the input file name. If 0 given it will use the directory of the template file')
+    ->addOption('clean-env','c',InputOption::VALUE_NONE,'By default ENV values are passed to the template engine. Using this flag will not use the ENV values')
     ->setCode(function(InputInterface  $input, OutputInterface  $output ){
-        $style = new SymfonyStyle($input, $output);
-        $vars = $input->getArgument('values');
-        if ( empty($vars) ) {
-            $vars = $_SERVER;
-        } else {
-            $vars = InputParser::parseEnv($vars);
+
+        $parser = new InputParser();
+        $envVars = $input->getOption('clean-env')  ? [] : $_SERVER;
+        $parser
+            ->addValues($envVars)
+            ->addKeyValuePairs($input->getArgument('values'))
+        ;
+        if ( $input->getOption('input-file') ) {
+            $file = $input->getOption('input-file');
+            if ( $input->getOption('input-section' )) {
+                $file .= '?'.$input->getOption('input-section' );
+            }
+            $parser->addInputFile($file);
         }
+        $values = $parser->getValues();
         $templateFile = $input->getOption('template-file');
-        if ( !is_file($templateFile) ) {
-            throw new UnexpectedValueException("Template file can not be empty");
-        }
-        $template = file_get_contents($input->getOption('template-file'));
+        $template = TemplateFiles::createTemplate($templateFile);
         $renderer = new Renderer();
-        $data = $renderer->render($template, $vars);
+        $data = $renderer->render($template, $values);
         $outputFile = $input->getOption('output');
         if ( empty($outputFile) ) {
             $outputFile = 'php://stdout';

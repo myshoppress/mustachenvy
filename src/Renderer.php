@@ -20,26 +20,29 @@ class Renderer
         $this->compileFlags =
             LightnCandy::FLAG_ERROR_EXCEPTION |
             LightnCandy::FLAG_RUNTIMEPARTIAL |
-            LightnCandy::FLAG_NOESCAPE
+            LightnCandy::FLAG_NOESCAPE |
+            LightnCandy::FLAG_ADVARNAME |
+            LightnCandy::FLAG_JSOBJECT |
+            LightnCandy::FLAG_SPVARS |
+            LightnCandy::FLAG_ELSE |
+            LightnCandy::FLAG_NAMEDARG
         ;
-        $this->registerHelper('default', static function(...$args){
-            \array_pop($args);
-
-            //find first truthy value
-            foreach($args as $value) {
-                if ( (bool)$value ) {
-                    return $value;
-                }
-            }
-
-            return '';
-        });
-        $this->registerNativeMethods();
+        $this->registerHelpers(TemplateHelpers::getHelpers());
     }
 
     public function registerHelper(string $name, callable $helper): void
     {
         $this->helpers[$name] = $helper;
+    }
+
+    /**
+     * @param array<string,callable> $helpers
+     */
+    public function registerHelpers(array $helpers): void
+    {
+        foreach ($helpers as $name => $helper) {
+            $this->registerHelper($name, $helper);
+        }
     }
 
     /**
@@ -54,21 +57,6 @@ class Renderer
         $renderer = eval($compiledCode);
 
         return $renderer($vars);
-    }
-
-    private function registerNativeMethods(): void
-    {
-        $methods = [
-            'strtolower', 'strtoupper',
-        ];
-
-        foreach($methods as $method) {
-            $this->registerHelper($method, static function(...$args) {
-                $opts = \array_pop($args);
-
-                return \call_user_func_array($opts['name'], $args);
-            });
-        }
     }
 
 }
