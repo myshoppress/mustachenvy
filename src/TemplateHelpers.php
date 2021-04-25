@@ -15,9 +15,8 @@ class TemplateHelpers
     {
         return [
             'default'     => self::defaultFn(),
+            'required'    => self::required(),
             '?:'          => self::ternaryFn(),
-            'strtolower'  => self::nativeFn(),
-            'strtoupper'  => self::nativeFn(),
             'eq'          => self::cmpFn(),
             'neq'          => self::cmpFn(),
             'lt'          => self::cmpFn(),
@@ -28,8 +27,22 @@ class TemplateHelpers
             'sub'          => self::arithmeticFn(),
             'multi'         => self::arithmeticFn(),
             'divi'          => self::arithmeticFn(),
-            'json'            => self::jsonFn()
+            'json'          => self::jsonFn(),
+            'strtolower'  => self::nativeFn(),
+            'strtoupper'  => self::nativeFn()
         ];
+    }
+
+    static private function required() : \Closure
+    {
+        return static function(...$args) : void {
+            $opts = \array_pop($args);
+            foreach($args as $arg) {
+               if ( !isset($opts['_this'][$arg]) ) {
+                   throw new \ErrorException(sprintf("%s variable is required", $arg));
+               }
+            }
+        };
     }
 
     static private function jsonFn() : \Closure

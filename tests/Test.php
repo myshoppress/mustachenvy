@@ -11,6 +11,18 @@ use PHPUnit\Framework\TestCase;
 class Test extends TestCase
 {
 
+    public function testTemplateHelperRequired(): void
+    {
+        $template = <<<'EOF'
+{{ required 'VAR1' 'VAR2' 'VAR3' }}
+EOF;
+        self::expectExceptionMessageMatches('/VAR3 variable/');
+        $renderer = new Renderer;
+        $renderer->render($template,[
+            'VAR1' => '1','VAR2'=>'2',
+        ]);
+    }
+
     public function testTemplateHelperJson(): void
     {
         $template = <<<'EOF'

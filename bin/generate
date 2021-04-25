@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 (new SingleCommandApplication)
     ->setName('Generate')
     ->addArgument("values", InputArgument::IS_ARRAY,"Key value pairs in format of KEY=VALUE. These values will overwrite ENV or values from input file", null)
-    ->addOption('template-file','f',InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
+    ->addOption('template-file','f',InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
     ->addOption('input-file','i',InputOption::VALUE_OPTIONAL,'Input file')
     ->addOption('input-section','s',InputOption::VALUE_OPTIONAL,'Only use the values in input file at section <SECTION>')
     ->addOption('output','o', InputOption::VALUE_OPTIONAL,'Output file. If none given it will output to stdout. If a directory is given. The file name will be guessed from the input file name. If 0 given it will use the directory of the template file')
@@ -39,7 +39,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
         }
         $values = $parser->getValues();
         $templateFile = $input->getOption('template-file');
-        $template = TemplateFiles::createTemplate($templateFile);
+        $template = TemplateFiles::createTemplate([$templateFile]);
         $renderer = new Renderer();
         $data = $renderer->render($template, $values);
         $outputFile = $input->getOption('output');

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace MyShoppress\DevOp\ConfTemplate;
 
 use LightnCandy\LightnCandy;
+use LightnCandy\Runtime;
 
 class Renderer
 {
@@ -54,9 +55,12 @@ class Renderer
             'helpers' => $this->helpers,
             'flags' => $this->compileFlags,
         ]);
+
         $renderer = eval($compiledCode);
 
-        return $renderer($vars);
+        return $renderer($vars,[
+            'debug' => Runtime::DEBUG_ERROR_EXCEPTION,
+        ]);
     }
 
 }
