@@ -21,13 +21,17 @@ class TemplateFiles
         foreach($templateFiles as $file) {
             if ( $file === \STDIN ) {
                 if ( \posix_isatty(\STDIN) !== false ) {
-                    throw new \UnexpectedValueException("Unable to read template from STDIN");
+                    throw new \UnexpectedValueException(
+                        "Unable to read template from STDIN. Please specify a template",
+                    );
                 }
 
                 $templates[]=\stream_get_contents(\STDIN);
             } else {
+                $file = \trim($file);
+
                 if ( !\is_file($file) ) {
-                    throw new \UnexpectedValueException("Template file can not be empty");
+                    throw new \UnexpectedValueException(\sprintf("Specified template path '%s' is not a file", $file));
                 }
 
                 $templates[] = \file_get_contents($file);

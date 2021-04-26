@@ -1,0 +1,10 @@
+FROM php:7.4-cli
+
+COPY ./dist/tmpl /usr/bin
+RUN chmod +x /usr/bin/tmpl
+VOLUME /app
+WORKDIR /app
+ENTRYPOINT ["/usr/bin/tmpl"]
+
+
+
