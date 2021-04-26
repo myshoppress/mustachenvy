@@ -6,17 +6,29 @@ $(BOX):
 clean:
 	rm -rf ./dist/*
 
-build-phar: $(BOX)
+build-phar: $(BOX) clean
 	echo "Compiling"
 	chmod +x $(BOX)
 	./$(BOX) compile
 
-build-image: clean build-phar
+build-image: build-phar
 	docker build --no-cache -t myshoppress/tmpl:$(VER) -f dockerfile-phar .
 	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/tmpl "-f nginx.conf.hbs"
 
-release: build
+ifdef VER
+
+check-version:
+	@echo "Makeing release $(VER)"
+
+docker-rel: build-image
+	docker push myshoppress/tmpl:$(VER)
+
+git-rel: build-phar
 	gh release create $(VER) ./dist/tmpl -t "Release $(VER)"  -p
+
+release: test clean check-version git-rel docker-rel
+
+endif
 
 build-dep:
 	@$(DOCKER_COMPOSE_BIN) run --rm php composer update

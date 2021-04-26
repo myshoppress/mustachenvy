@@ -37,10 +37,14 @@ class TemplateHelpers
     {
         return static function(...$args) : void {
             $opts = \array_pop($args);
+            $missingVars = [];
             foreach($args as $arg) {
                if ( !isset($opts['_this'][$arg]) ) {
-                   throw new \ErrorException(sprintf("%s variable is required", $arg));
+                   $missingVars[] = $arg;
                }
+            }
+            if ( count($missingVars) > 0 ) {
+                throw new \ErrorException(sprintf("%s variable(s) are missing.", implode(',', $missingVars)));
             }
         };
     }

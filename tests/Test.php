@@ -14,9 +14,9 @@ class Test extends TestCase
     public function testTemplateHelperRequired(): void
     {
         $template = <<<'EOF'
-{{ required 'VAR1' 'VAR2' 'VAR3' }}
+{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' }}
 EOF;
-        self::expectExceptionMessageMatches('/VAR3 variable/');
+        self::expectExceptionMessageMatches('/VAR3,VAR4 variable/');
         $renderer = new Renderer;
         $renderer->render($template,[
             'VAR1' => '1','VAR2'=>'2',
