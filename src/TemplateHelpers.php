@@ -37,9 +37,11 @@ class TemplateHelpers
     {
         return static function(...$args) : void {
             $opts = \array_pop($args);
+            $hash = $opts['hash'] ?? [];
+            $strict = !isset($hash['strict']) || $hash['strict'] !== false;
             $missingVars = [];
             foreach($args as $arg) {
-               if ( !isset($opts['_this'][$arg]) ) {
+               if ( !isset($opts['_this'][$arg]) || (!$opts['_this'][$arg] && $strict) ) {
                    $missingVars[] = $arg;
                }
             }

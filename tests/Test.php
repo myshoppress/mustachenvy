@@ -11,16 +11,29 @@ use PHPUnit\Framework\TestCase;
 class Test extends TestCase
 {
 
-    public function testTemplateHelperRequired(): void
+    public function testTemplateHelperRequiredStrict(): void
     {
-        $template = <<<'EOF'
-{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' }}
-EOF;
-        self::expectExceptionMessageMatches('/VAR3,VAR4 variable/');
+        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' }}";
+        self::expectExceptionMessageMatches('/ VAR3,VAR4 variable\(s\) are missing/');
+        $values = [
+            'VAR1' => '1','VAR2'=>'2','VAR3'=>'',
+        ];
         $renderer = new Renderer;
-        $renderer->render($template,[
-            'VAR1' => '1','VAR2'=>'2',
-        ]);
+        $renderer->render($template,$values);
+        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' strict=false }}";
+        self::expectExceptionMessageMatches('/VAR4 variable/');
+        $renderer->render($template, $values);
+    }
+
+    public function testTemplateHelperRequiredNotStrict(): void
+    {
+        $values = [
+            'VAR1' => '1','VAR2'=>'2','VAR3'=>'',
+        ];
+        $renderer = new Renderer;
+        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' strict=false }}";
+        self::expectExceptionMessageMatches('/ VAR4 variable\(s\) are missing/');
+        $renderer->render($template, $values);
     }
 
     public function testTemplateHelperJson(): void
