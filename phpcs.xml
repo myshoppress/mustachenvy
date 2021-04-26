@@ -32,6 +32,7 @@
 		<exclude name="SlevomatCodingStandard.ControlStructures.NewWithParentheses" />
 		<exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation" />
 		<exclude name="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint" />
+		<exclude name="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing" />
 	</rule>
 
 

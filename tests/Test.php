@@ -75,6 +75,24 @@ EOF;
         self::assertStringContainsString('15 Items', $output);
     }
 
+    public function testInputParserOrder(): void
+    {
+        $parser = new InputParser;
+        $parser->addInputFile(__DIR__.'/../examples/build.env');
+        $parser->addEnvValues(['NGINX_LOG_LEVEL'=>'level3']);
+        $parser->addKeyValuePairs(['NGINX_LOG_LEVEL=level4']);
+        $values = $parser->getValues();
+        self::assertEquals('level2', $values['NGINX_LOG_LEVEL']);
+        $parser->setOrder('fke');
+        $values = $parser->getValues();
+        self::assertEquals('level3', $values['NGINX_LOG_LEVEL']);
+        $parser->setOrder('fek');
+        $values = $parser->getValues();
+        self::assertEquals('level4', $values['NGINX_LOG_LEVEL']);
+        self::expectException(\InvalidArgumentException::class);
+        $parser->setOrder('efx');
+    }
+
     public function testInputParser(): void
     {
         $parser = new InputParser;

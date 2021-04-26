@@ -16,10 +16,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 (new SingleCommandApplication)
     ->setName('Generate')
-    ->addArgument("values", InputArgument::IS_ARRAY,"Key value pairs in format of KEY=VALUE. These values will overwrite ENV or values from input file", null)
+    ->addArgument("input-values", InputArgument::IS_ARRAY,"Key value pairs in format of KEY=VALUE. These values will overwrite ENV or values from input file", null)
     ->addOption('template-file','f', InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
     ->addOption('input-file','i',InputOption::VALUE_REQUIRED,'Read Key value pair from an input file')
     ->addOption('input-section','s',InputOption::VALUE_REQUIRED,'Only use the values in input file at section <SECTION>')
+    ->addOption('input-order',null,InputOption::VALUE_REQUIRED,'The order accepts the input. There are 3 types of inputs. "e" for env values, "k" for key/value pairs entered in the argument and "f" is in input file. Default value is "ekf"','ekf')
     ->addOption('output','o', InputOption::VALUE_REQUIRED,'Output file. If none given it will output to stdout. If a directory is given. The file name will be guessed from the input file name. If 0 given it will use the directory of the template file')
     ->addOption('clean-env','c',InputOption::VALUE_NONE,'By default ENV values are passed to the template engine. Using this flag will not use the ENV values')
     ->setCode(function(InputInterface  $input, OutputInterface  $output ){
@@ -27,8 +28,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
         $parser = new InputParser();
         $envVars = $input->getOption('clean-env')  ? [] : $_SERVER;
         $parser
-            ->addValues($envVars)
-            ->addKeyValuePairs($input->getArgument('values'))
+            ->addEnvValues($envVars)
+            ->addKeyValuePairs($input->getArgument('input-values'))
         ;
         if ( $input->getOption('input-file') ) {
             $file = $input->getOption('input-file');
@@ -37,6 +38,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
             }
             $parser->addInputFile($file);
         }
+        $parser->setOrder($input->getOption('input-order'));
         $values = $parser->getValues();
         $templateFile = $input->getOption('template-file');
         $template = TemplateFiles::createTemplate($templateFile !== null ? [$templateFile] : []);

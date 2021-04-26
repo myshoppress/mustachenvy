@@ -9,18 +9,34 @@ use Webmozart\Assert\Assert;
 class InputParser
 {
 
+    public const ORDER_FLAG_ENVVALUE = 'e';
+    public const ORDER_FLAG_KVPAIR = 'k';
+    public const ORDER_FLAG_FILE = 'f';
+
     /**
-     * @var array<string,scalar>
+     * @var array <string,scalar>
      */
-    private array $values = [];
+    private array $kvPairs = [];
+
+    /**
+     * @var array <string,scalar>
+     */
+    private array $envValues = [];
+
+    /**
+     * @var array <string,scalar>
+     */
+    private array $fileValues = [];
+
+    private string $order = self::ORDER_FLAG_ENVVALUE.self::ORDER_FLAG_KVPAIR.self::ORDER_FLAG_FILE;
 
     /**
      * @param array<string,scalar> $values
      * @return $this
      */
-    public function addValues(array $values): self 
+    public function addEnvValues(array $values): self
     {
-        $this->values = \array_merge($this->values, $values);
+        $this->envValues = \array_merge($this->envValues, $values);
 
         return $this;
     }
@@ -30,16 +46,27 @@ class InputParser
      */
     public function addKeyValuePairs(array $keyValuePairs): self
     {
-        $this->values = \array_merge($this->values, self::parseKeyValuePairs($keyValuePairs));
+        $this->kvPairs = \array_merge($this->kvPairs, self::parseKeyValuePairs($keyValuePairs));
 
         return $this;
     }
 
     public function addInputFile(string $inputFile): self
     {
-        $this->values = \array_merge($this->values, self::parseFile($inputFile));
+        $this->fileValues = \array_merge($this->fileValues, self::parseFile($inputFile));
 
         return $this;
+    }
+
+    public function setOrder(string $order): void
+    {
+        $mask = self::ORDER_FLAG_ENVVALUE.self::ORDER_FLAG_FILE.self::ORDER_FLAG_KVPAIR;
+
+        if ( \strspn($order, $mask) !== 3 ) {
+            throw new \InvalidArgumentException(\sprintf("%s is an invalid order string", $order));
+        }
+
+        $this->order = \substr($order, 0, 3);
     }
 
     /**
@@ -47,7 +74,27 @@ class InputParser
      */
     public function getValues(): array
     {
-        return $this->values;
+        $orderFlags = \str_split($this->order);
+        $values = [];
+
+        foreach($orderFlags as $flag) {
+            switch ($flag) {
+                case self::ORDER_FLAG_KVPAIR:
+                    $values = \array_merge($values, $this->kvPairs);
+                    break;
+
+                case self::ORDER_FLAG_FILE:
+                    $values = \array_merge($values, $this->fileValues);
+                    break;
+
+                case self::ORDER_FLAG_ENVVALUE:
+                    $values = \array_merge($values, $this->envValues);
+
+                    break;
+            }
+        }
+
+        return $values;
     }
 
     /**
