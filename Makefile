@@ -12,7 +12,7 @@ build-phar: $(BOX)
 	./$(BOX) compile
 
 build-image: clean build-phar
-	docker build --no-cache -t myshoppress/tmpl -f dockerfile-phar .
+	docker build --no-cache -t myshoppress/tmpl:$(VER) -f dockerfile-phar .
 	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/tmpl "-f nginx.conf.hbs"
 
 release: build
