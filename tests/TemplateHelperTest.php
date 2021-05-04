@@ -150,4 +150,22 @@ EOF;
         self::assertStringNotContainsString('BUT NOT THIS', $output);
     }
 
+    public function testImportTemplateAsPartial(): void
+    {
+        $template = <<<'EOF'
+{{> "/app/tests/files/template1.hbs" }}
+
+{{> "tests/files/template3.hbs" }}
+EOF;
+        $assert = <<<'EOF'
+Template 1
+Template 2
+Template 3
+Template 2
+EOF;
+        $renderer = new TemplateEngine;
+        $result = $renderer->render($template);
+        self::assertEquals($assert, $result);
+    }
+
 }
