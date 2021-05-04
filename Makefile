@@ -23,6 +23,8 @@ check-version:
 
 docker-rel: build-image
 	docker push myshoppress/mustachenvy:$(VER)
+	docker image tag myshoppress/mustachenvy:$(VER) myshoppress/mustachenvy:latest
+	docker push myshoppress/mustachenvy:latest
 
 git-rel: build-phar
 	gh release create $(VER) ./dist/mustachenvy -t "Release $(VER)"  -p
