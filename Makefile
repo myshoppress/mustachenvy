@@ -11,11 +11,12 @@ build-phar: $(BOX) clean
 	chmod +x $(BOX)
 	./$(BOX) compile
 
+ifdef VER
+
 build-image: build-phar
 	docker build --no-cache -t myshoppress/mustachenvy:$(VER) -f dockerfile-phar .
-	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/mustachenvy "-f nginx.conf.hbs"
+	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/mustachenvy:$(VER) "-tnginx.conf.hbs"
 
-ifdef VER
 
 check-version:
 	@echo "Makeing release $(VER)"

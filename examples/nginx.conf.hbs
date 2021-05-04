@@ -5,6 +5,8 @@ upstream php {
     server unix:/var/run/php/php-fpm.sock;
 }
 
+{{> "_partial.conf.hbs" }}
+
 {{#*inline serverConf}}
 
 root /srv/www/current/web;
