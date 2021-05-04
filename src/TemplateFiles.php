@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace MyShoppress\DevOp\ConfTemplate;
+namespace MyShoppress\DevOp\MustacheEnvy;
 
 class TemplateFiles
 {

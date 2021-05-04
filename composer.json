@@ -1,11 +1,13 @@
 {
-  "name": "myshoppress/conf-template",
+  "name": "myshoppress/mustachenvy",
   "description": "Simple templating engine for generating conf files from their templates during DevOps. Similar to Ansible using Jinja2",
   "license": "MIT",
   "require": {
     "zordius/lightncandy": "^1.2",
     "symfony/console": "^5.2",
-    "webmozart/assert": "^1.10"
+    "webmozart/assert": "^1.10",
+    "m1/env": "^2.2",
+    "symfony/yaml": "^5.2"
   },
   "require-dev": {
     "php" : "^7.4",
@@ -23,8 +25,11 @@
     ""
   ],
   "autoload": {
+    "files": [
+      "./src/functions.php"
+    ],
     "psr-4": {
-      "MyShoppress\\DevOp\\ConfTemplate\\" : "./src"
+      "MyShoppress\\DevOp\\MustacheEnvy\\" : "./src"
     }
   },
   "scripts": {

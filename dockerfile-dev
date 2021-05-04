@@ -1,4 +1,10 @@
 FROM php:7.4-cli
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+RUN apt-get install -y \
+        libzip-dev \
+        zip \
+        && docker-php-ext-install zip
+
 RUN chmod +x /usr/bin/composer

@@ -2,9 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace MyShoppress\DevOp\ConfTemplate;
-
-use Webmozart\Assert\Assert;
+namespace MyShoppress\DevOp\MustacheEnvy;
 
 class InputParser
 {
@@ -37,23 +35,6 @@ class InputParser
     public function addEnvValues(array $values): self
     {
         $this->envValues = \array_merge($this->envValues, $values);
-
-        return $this;
-    }
-
-    /**
-     * @param array<string> $keyValuePairs
-     */
-    public function addKeyValuePairs(array $keyValuePairs): self
-    {
-        $this->kvPairs = \array_merge($this->kvPairs, self::parseKeyValuePairs($keyValuePairs));
-
-        return $this;
-    }
-
-    public function addInputFile(string $inputFile): self
-    {
-        $this->fileValues = \array_merge($this->fileValues, self::parseFile($inputFile));
 
         return $this;
     }
@@ -95,98 +76,6 @@ class InputParser
         }
 
         return $values;
-    }
-
-    /**
-     * Returns the values from in format key1=value1 pair. The returned is collapsed to 1d array
-     * before being returned.
-     *
-     * @param string $inputFile input file. If the file ends with ?<section> then it will o
-     * @return array<string|scalar>
-     */
-    static public function parseFile(string $inputFile): array
-    {
-        $parts = \parse_url($inputFile);
-
-        if ( !\is_array($parts) ) {
-            throw new \UnexpectedValueException(\sprintf("Unable to read the file %s", $inputFile));
-        }
-
-        $returnSection = $parts['query'] ?? null;
-
-        $input = \file_get_contents($parts['path'] ?? '');
-
-        if ( $input === false ) {
-            throw new \UnexpectedValueException(\sprintf("Unable to read the file %s", $inputFile));
-        }
-
-        //if any line starts with ; (comment) or [section] it is an ini file
-        $isINI = \preg_match('/^ *[;\[]/m', $input) !== false;
-
-        $values = [];
-
-        if ( $isINI ) {
-            \set_error_handler(static function($code, $msg): void{
-               throw new \UnexpectedValueException(\sprintf("Unable to parse INI format. %s", $msg));
-            });
-            $values = \parse_ini_string($input, true, \INI_SCANNER_TYPED);
-
-            if ( $values === false ) {
-                throw new \UnexpectedValueException("Unable to parse INI format");
-            }
-
-            \restore_error_handler();
-        } else {
-            $lines = \explode("\n", $input);
-
-            $section = null;
-
-            foreach($lines as $line) {
-                $line = \trim($line);
-
-                if ( \substr($line, 0, 1) === '#' ) {
-                    //it's a comment or a header
-                    $match = [];
-
-                    if ( \preg_match('/\[(\w+)\]/',$line, $match) !== false ) {
-                        $section = $match[1];
-                        $values[$section] ??= [];
-                    }
-
-                    continue;
-                }
-
-                $array = self::parseKeyValuePairs([$line]);
-
-                if ( $section ) {
-                    Assert::isArray($values[$section]);
-                    $values[$section] = \array_merge($values[$section] ?? [], $array);
-                } else {
-                    $values = \array_merge($array, $values);
-                }
-            }
-        }
-
-        $array = [];
-
-        foreach($values as $key => $value) {
-            //only return keys matching  the section
-            if ($returnSection !== null && \strpos($key, $returnSection) === false) {
-                continue;
-            }
-
-            if ( \is_array($value) ) {
-                $section = $value;
-
-                foreach($section as $key2 => $value2) {
-                    $array[$key2] = $value2;
-                }
-            } else {
-                $array[$key] = $value;
-            }
-        }
-
-        return $array;
     }
 
     /**
