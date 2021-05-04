@@ -4,8 +4,11 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use MyShoppress\DevOp\MustacheEnvy\InputFileParser;
+use MyShoppress\DevOp\MustacheEnvy\InputParser;
+use MyShoppress\DevOp\MustacheEnvy\InputValues;
 use MyShoppress\DevOp\MustacheEnvy\OutputHandler;
 use MyShoppress\DevOp\MustacheEnvy\Renderer;
+use MyShoppress\DevOp\MustacheEnvy\TemplateEngine;
 use MyShoppress\DevOp\MustacheEnvy\TemplateFiles;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,43 +16,50 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Webmozart\Assert\Assert;
 
 (new SingleCommandApplication)
     ->setName('Generate')
     ->addOption('template-file','t', InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
     ->addOption('input-file','i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,'Read input from input file. Detect input type from the file extension: `yaml` or `yml` for YAML, `.env` for ENV and `.json` for JSON')
-//    ->addOption('input-order',null,InputOption::VALUE_REQUIRED,'The order accepts the input. There are 3 types of inputs. "e" for env values, "k" for key/value pairs entered in the argument and "i" is in input file. Default value is "eki"','eki')
     ->addOption('output','o', InputOption::VALUE_REQUIRED,'Output the result into this file instead of stdout')
     ->addOption('clear-env','c',InputOption::VALUE_NONE,'By default ENV values are passed to the template engine. This flag prevents that')
-    ->setCode(function(InputInterface  $input, OutputInterface  $output ){
-
-        $parser = new InputParser();
-        $envVars = $input->getOption('clear-env')  ? [] : $_SERVER;
-        $parser
-            ->addEnvValues($envVars)
-            ->addKeyValuePairs($input->getArgument('input-values'))
-        ;
-        if ( $input->getOption('input-file') ) {
-            $file = $input->getOption('input-file');
-            if ( $input->getOption('input-section' )) {
-                $file .= '?'.$input->getOption('input-section' );
-            }
-            $parser->addInputFile($file);
+    ->setCode(function(InputInterface  $input, OutputInterface  $output ) : void {
+        $values = (bool)$input->getOption('clear-env') ? [] : $_SERVER;
+        $inputValues = new InputValues;
+        $inputValues->setValues($values);
+        $inputFiles = $input->getOption('input-file');
+        if ( is_array($inputFiles) ) {
+            $inputValues->addInputFile($inputFiles);
         }
-        $parser->setOrder($input->getOption('input-order'));
-        $values = $parser->getValues();
+        $engine = new TemplateEngine();
+        /** @var ?string $templateFile */
         $templateFile = $input->getOption('template-file');
-        $template = TemplateFiles::createTemplate($templateFile !== null ? [$templateFile] : []);
-        $renderer = new Renderer();
-        $data = $renderer->render($template, $values);
-        $outputFile = $input->getOption('output');
-        if ( empty($outputFile) ) {
-            $outputFile = 'php://stdout';
+        if ( $templateFile === null ) {
+            //read from STDIN
+            if ( \posix_isatty(\STDIN) !== false ) {
+                throw new \UnexpectedValueException(
+                    "Unable to read template from STDIN. Please specify a template",
+                );
+            }
+            $template = stream_get_contents(\STDIN);
+            if ( $template === false ) {
+                throw new \UnexpectedValueException("Unable to read the template from STDIN");
+            }
+        } else {
+            $template = file_get_contents($templateFile);
+            if ( $template === false ) {
+                throw new \UnexpectedValueException(sprintf(
+                  "Unable to read the template file %s", $templateFile
+                ));
+            }
+            $engine->addTemplateSearchPath(dirname($templateFile));
         }
-        elseif ( is_dir($outputFile) || $outputFile === '1' ) {
-            $outputDirectory = $outputFile === '1' ? dirname($templateFile) : $outputFile;
-            $name = pathinfo($templateFile, PATHINFO_FILENAME);
-            $outputFile = $outputDirectory."/".$name;
+        $data = $engine->render($template, $inputValues->getArrayCopy());
+        /** @var ?string $outputFile */
+        $outputFile = $input->getOption('output');
+        if ( $outputFile === null ) {
+            $outputFile = 'php://stdout';
         }
         OutputHandler::output($outputFile, $data);
     })

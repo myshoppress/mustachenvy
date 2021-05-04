@@ -1,5 +1,5 @@
 {
   "main": "bin/generate",
-  "output": "./dist/tmpl",
+  "output": "./dist/mustachenvy",
   "chmod":"0700"
 }

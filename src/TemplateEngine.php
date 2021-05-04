@@ -49,6 +49,12 @@ class TemplateEngine
         ]);
     }
 
+    public function addTemplateSearchPath(string $path): void
+    {
+        \array_unshift($this->templateSearchPaths, $path);
+        $this->templateSearchPaths = \array_unique($this->templateSearchPaths);
+    }
+
     /**
      * @param array<mixed> $context
      */
@@ -77,12 +83,6 @@ class TemplateEngine
         }
 
         return $result;
-    }
-
-    private function addTemplateSearchPath(string $path): void
-    {
-        \array_unshift($this->templateSearchPaths, $path);
-        $this->templateSearchPaths = \array_unique($this->templateSearchPaths);
     }
 
 }

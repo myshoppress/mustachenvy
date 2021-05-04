@@ -12,8 +12,8 @@ build-phar: $(BOX) clean
 	./$(BOX) compile
 
 build-image: build-phar
-	docker build --no-cache -t myshoppress/tmpl:$(VER) -f dockerfile-phar .
-	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/tmpl "-f nginx.conf.hbs"
+	docker build --no-cache -t myshoppress/mustachenvy:$(VER) -f dockerfile-phar .
+	docker run --rm -it -v $(shell pwd)/examples:/app myshoppress/mustachenvy "-f nginx.conf.hbs"
 
 ifdef VER
 
@@ -21,10 +21,10 @@ check-version:
 	@echo "Makeing release $(VER)"
 
 docker-rel: build-image
-	docker push myshoppress/tmpl:$(VER)
+	docker push myshoppress/mustachenvy:$(VER)
 
 git-rel: build-phar
-	gh release create $(VER) ./dist/tmpl -t "Release $(VER)"  -p
+	gh release create $(VER) ./dist/mustachenvy -t "Release $(VER)"  -p
 
 release: test clean check-version git-rel docker-rel
 

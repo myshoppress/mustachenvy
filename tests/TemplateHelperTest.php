@@ -28,29 +28,19 @@ class TemplateHelperTest extends TestCase
         self::assertEquals(-4, $result);
     }
 
-    public function testTemplateHelperRequiredStrict(): void
+    public function testTemplateHelperRequiredException(): void
     {
-        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' }}";
-        self::expectExceptionMessageMatches('/ VAR3,VAR4 variable\(s\) are missing/');
-        $values = [
-            'VAR1' => '1','VAR2'=>'2','VAR3'=>'',
-        ];
+        $template = "{{ required VAR1 'VAR1 can not be null' }}";
+        self::expectDeprecationMessage('VAR1 can not be null');
         $renderer = new TemplateEngine;
-        $renderer->render($template,$values);
-        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' strict=false }}";
-        self::expectExceptionMessageMatches('/VAR4 variable/');
-        $renderer->render($template, $values);
+        $renderer->render($template,['VAR'=>'']);
     }
 
-    public function testTemplateHelperRequiredNotStrict(): void
+    public function testTemplateHelperRequiredReturnValue(): void
     {
-        $values = [
-            'VAR1' => '1','VAR2'=>'2','VAR3'=>'',
-        ];
         $renderer = new TemplateEngine;
-        $template = "{{ required 'VAR1' 'VAR2' 'VAR3' 'VAR4' strict=false }}";
-        self::expectExceptionMessageMatches('/ VAR4 variable\(s\) are missing/');
-        $renderer->render($template, $values);
+        $result = $renderer->render('{{ required VAR1 }}',['VAR1'=>'hello']);
+        self::assertEquals($result,'hello');
     }
 
     public function testTemplateHelperJson(): void
@@ -104,23 +94,7 @@ EOF;
         self::assertStringContainsString('defaultValue', $output);
         self::assertStringContainsString('15 Items', $output);
     }
-//    public function testInputParserOrder(): void
-//    {
-//        $parser = new InputParser;
-//        $parser->addInputFile(__DIR__.'/../examples/build.env');
-//        $parser->addEnvValues(['NGINX_LOG_LEVEL'=>'level3']);
-//        $parser->addKeyValuePairs(['NGINX_LOG_LEVEL=level4']);
-//        $values = $parser->getValues();
-//        self::assertEquals('level2', $values['NGINX_LOG_LEVEL']);
-//        $parser->setOrder('fke');
-//        $values = $parser->getValues();
-//        self::assertEquals('level3', $values['NGINX_LOG_LEVEL']);
-//        $parser->setOrder('fek');
-//        $values = $parser->getValues();
-//        self::assertEquals('level4', $values['NGINX_LOG_LEVEL']);
-//        self::expectException(\InvalidArgumentException::class);
-//        $parser->setOrder('efx');
-//    }
+
     public function testRenderer(): void
     {
         $template = <<<'EOF'
@@ -166,6 +140,19 @@ EOF;
         $renderer = new TemplateEngine;
         $result = $renderer->render($template);
         self::assertEquals($assert, $result);
+    }
+
+    public function testEnvValueLookup(): void
+    {
+        $engine = new TemplateEngine;
+        $result = $engine->render('{{ $ "key1.key2.key3" }}',[
+            'key1' => ['key2'=>['key3'=>'hello']],
+        ]);
+        self::assertEquals($result, 'hello');
+        $result = $engine->render('{{ $ "key1.key2.key3" }}',[
+            'KEY1_KEY2_KEY3' => 'hello',
+        ]);
+        self::assertEquals($result, 'hello');
     }
 
 }

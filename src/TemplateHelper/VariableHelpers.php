@@ -15,6 +15,7 @@ class VariableHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         return [
+            '$' => castCallable(static::class.'::dotEnvVariable'),
             'required' => castCallable(static::class.'::required'),
             'default' => castCallable(static::class.'::default'),
         ];
@@ -22,8 +23,36 @@ class VariableHelpers implements ProviderInterface
 
     /**
      * @param mixed ...$args
+     * @return mixed|null
      */
-    public function default(...$args): string
+    static public function dotEnvVariable(...$args)
+    {
+        $opt = \array_pop($args);
+        [$varName] = $args;
+
+        if ( $varName === '') {
+            throw new \InvalidArgumentException("Variable name can not be empty");
+        }
+
+        $data = $opt['_this'] ?? [];
+        $envName = \strtoupper(\str_replace('.','_', $varName));
+        $envValue = $data[$envName] ?? null;
+        //now lets check if $t_context contains a data structure representing the dot notation
+        $keys = \explode('.', $varName);
+
+        foreach($keys as $k) {
+            $dotValue = $data[$k] ?? null;
+            $data = $data[$k] ?? [];
+        }
+
+        return $dotValue ?? $envValue;
+    }
+
+    /**
+     * @param mixed ...$args
+     * @return mixed
+     */
+    static public function default(...$args)
     {
         \array_pop($args);
 
@@ -40,25 +69,19 @@ class VariableHelpers implements ProviderInterface
     /**
      * @param mixed ...$args
      * @throws \ErrorException
+     * @return mixed
      */
-    public function required(...$args): void
+    static public function required(...$args)
     {
-        $opts = \array_pop($args);
-        $hash = $opts['hash'] ?? [];
-        $strict = !isset($hash['strict']) || $hash['strict'] !== false;
-        $missingVars = [];
+        \array_pop($args);
+        [$value, $errorMessage] = $args;
+        $errorMessage ??= "Value can not be null";
 
-        foreach($args as $arg) {
-            if ( isset($opts['_this'][$arg]) && ($opts['_this'][$arg] || !$strict) ) {
-                continue;
-            }
-
-            $missingVars[] = $arg;
+        if ( $value === null || $value === '' ) {
+            throw new \ErrorException($errorMessage);
         }
 
-        if ( \count($missingVars) > 0 ) {
-            throw new \ErrorException(\sprintf("%s variable(s) are missing.", \implode(',', $missingVars)));
-        }
+        return $value;
     }
 
 }
