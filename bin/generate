@@ -53,7 +53,7 @@ use Webmozart\Assert\Assert;
                   "Unable to read the template file %s", $templateFile
                 ));
             }
-            $engine->addTemplateSearchPath(dirname($templateFile));
+            $engine->getCompiler()->addPartialSearchPath(dirname($templateFile));
         }
         $data = $engine->render($template, $inputValues->getArrayCopy());
         /** @var ?string $outputFile */

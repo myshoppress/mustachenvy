@@ -132,6 +132,30 @@ EOF;
         self::assertEquals(self::$result,"A,B");
     }
 
+    public function testFileContentHelper(): void
+    {
+        $template = <<<'EOF'
+{{ file_content (path_join "tests/" valid_path) compile=true ignoreInvalidPath=true ~}}
+{{ file_content invalid_path compile=true ignoreInvalidPath=true ~}} 
+EOF;
+        $renderer = new TemplateEngine;
+        $result = $renderer->render($template, [
+            'valid_path'=>"files/template1.hbs",
+            'invalid_path'=>"tests/files/template10.hbs",
+        ]);
+        $assert = <<<'EOF'
+Template 1
+Template 2
+EOF;
+        self::assertEquals($assert,$result);
+    }
+
+    public function testInvalidFilePath(): void
+    {
+        self::expectExceptionMessage("custom helper 'file_content'");
+        self::render('{{ file_content invalid_path }}');
+    }
+
     public function testImportTemplateAsPartial(): void
     {
         $template = <<<'EOF'
@@ -163,14 +187,13 @@ EOF;
         self::assertEquals($result, 'hello');
     }
 
-    public function testFileExistHelper()
+    public function testFileExistHelper(): void
     {
         $tmpl = '{{ ?: (path_exists "tests/files/" path) "path valid" "path invalid" }}';
         self::render($tmpl,['path'=>'invalid_path']);
         self::assertEquals(self::$result, "path invalid");
         self::render($tmpl,['path'=>'/template4.hbs']);
         self::assertEquals(self::$result, "path valid");
-
     }
 
     /**
