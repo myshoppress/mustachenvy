@@ -20,13 +20,14 @@ class TemplateHelper implements ProviderInterface, ResolverInterface
     public function __construct()
     {
         $this
-            ->addHelperProvider(new PHPFunctionHelpers)
+            ->addHelperProvider(new StringHelpers)
             ->addHelperProvider(new ArithmeticHelpers)
             ->addHelperProvider(new LogicalHelpers)
             ->addHelperProvider(new ComparisonHelpers)
             ->addHelperProvider(new VariableHelpers)
             ->addHelperProvider(new FormatBlockHelpers)
             ->addHelperProvider(new TernaryOperatorHelper)
+            ->addHelperProvider(new FileHelpers)
         ;
     }
 

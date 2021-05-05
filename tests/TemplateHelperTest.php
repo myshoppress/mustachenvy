@@ -10,6 +10,8 @@ use PHPUnit\Framework\TestCase;
 class TemplateHelperTest extends TestCase
 {
 
+    static protected string $result = '';
+
     public function testPHPFunctionTemplateHelper(): void
     {
         $template = new TemplateEngine;
@@ -124,6 +126,12 @@ EOF;
         self::assertStringNotContainsString('BUT NOT THIS', $output);
     }
 
+    public function testStringConcat(): void
+    {
+        self::render('{{ concat "A" "B" separator="," }}');
+        self::assertEquals(self::$result,"A,B");
+    }
+
     public function testImportTemplateAsPartial(): void
     {
         $template = <<<'EOF'
@@ -153,6 +161,25 @@ EOF;
             'KEY1_KEY2_KEY3' => 'hello',
         ]);
         self::assertEquals($result, 'hello');
+    }
+
+    public function testFileExistHelper()
+    {
+        $tmpl = '{{ ?: (path_exists "tests/files/" path) "path valid" "path invalid" }}';
+        self::render($tmpl,['path'=>'invalid_path']);
+        self::assertEquals(self::$result, "path invalid");
+        self::render($tmpl,['path'=>'/template4.hbs']);
+        self::assertEquals(self::$result, "path valid");
+
+    }
+
+    /**
+     * @param array<mixed> $vars
+     */
+    static public function render(string $template, array $vars=[]): string
+    {
+        self::$result = (new TemplateEngine)->render($template, $vars);
+        return self::$result;
     }
 
 }

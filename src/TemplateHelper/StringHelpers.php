@@ -6,8 +6,10 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class PHPFunctionHelpers implements ProviderInterface
+class StringHelpers implements ProviderInterface
 {
+
+    use PHPFunctionsWrapperTrait;
 
     /**
      * @return array<string, callable>
@@ -18,17 +20,21 @@ class PHPFunctionHelpers implements ProviderInterface
             'strlen','str_word_count','strpos','str_replace','ucwords','strtoupper','strtolower','ucfirst','str_repeat',
             'substr','trim','strrev','strcmp',
         ];
-        return \array_fill_keys($strMethods, castCallable(static::class.'::nativePHPMethod'));
+        $helpers = self::wrapPHPFunctions(...$strMethods);
+        $helpers = \array_merge($helpers, [
+            'concat' => castCallable(static::class.'::concat'),
+        ]);
+        return $helpers;
     }
 
     /**
      * @param mixed ...$args
-     * @return false|mixed
      */
-    static public function nativePHPMethod(...$args)
+    static public function concat(...$args): string
     {
         $opts = \array_pop($args);
-        return \call_user_func_array($opts['name'], $args);
+        $glue = $opts['hash']['separator'] ?? '';
+        return \implode($glue, $args);
     }
 
 }
