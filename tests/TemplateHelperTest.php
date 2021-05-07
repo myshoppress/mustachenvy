@@ -12,23 +12,6 @@ class TemplateHelperTest extends TestCase
 
     static protected string $result = '';
 
-    public function testPHPFunctionTemplateHelper(): void
-    {
-        $template = new TemplateEngine;
-        $result = $template->render('{{strtolower "HELLO" }}');
-        self::assertEquals($result,"hello");
-        $result = $template->render('{{ucfirst "hello" }}');
-        self::assertEquals($result,"Hello");
-    }
-
-    public function testTemplateHelperRequiredException(): void
-    {
-        $template = "{{ required VAR1 'VAR1 can not be null' }}";
-        self::expectDeprecationMessage('VAR1 can not be null');
-        $renderer = new TemplateEngine;
-        $renderer->render($template,['VAR'=>'']);
-    }
-
     public function testTemplateHelperRequiredReturnValue(): void
     {
         $renderer = new TemplateEngine;
@@ -163,19 +146,6 @@ EOF;
         $renderer = new TemplateEngine;
         $result = $renderer->render($template);
         self::assertEquals($assert, $result);
-    }
-
-    public function testEnvValueLookup(): void
-    {
-        $engine = new TemplateEngine;
-        $result = $engine->render('{{ $ "key1.key2.key3" }}',[
-            'key1' => ['key2'=>['key3'=>'hello']],
-        ]);
-        self::assertEquals($result, 'hello');
-        $result = $engine->render('{{ $ "key1.key2.key3" }}',[
-            'KEY1_KEY2_KEY3' => 'hello',
-        ]);
-        self::assertEquals($result, 'hello');
     }
 
     public function testFileExistHelper(): void
