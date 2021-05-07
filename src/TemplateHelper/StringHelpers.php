@@ -17,8 +17,8 @@ class StringHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         $strMethods = [
-            'strlen','str_word_count','strpos','str_replace','ucwords','strtoupper','strtolower','ucfirst','str_repeat',
-            'substr','trim','strrev','strcmp',
+            'strlen','strpos','str_replace','ucwords','strtoupper','strtolower','ucfirst','str_repeat',
+            'substr','preg_match','preg_replace',
         ];
         $helpers = self::wrapPHPFunctions(...$strMethods);
         $helpers = \array_merge($helpers, [

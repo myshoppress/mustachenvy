@@ -14,7 +14,7 @@
          verbose="true">
     <testsuites>
         <testsuite name="default">
-            <directory suffix="OperatorHelperTest.php">tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 

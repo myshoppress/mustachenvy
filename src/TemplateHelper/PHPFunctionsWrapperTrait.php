@@ -17,7 +17,11 @@ trait PHPFunctionsWrapperTrait
     static public function callPHPFunction(...$args)
     {
         $opts = \array_pop($args);
-        return \call_user_func_array($opts['name'], $args);
+        $result = \call_user_func_array($opts['name'], $args);
+        $result = (bool)$result && isset($opts['fn'])
+            ? $opts['fn']()
+            : $result;
+        return $result;
     }
 
     /**
