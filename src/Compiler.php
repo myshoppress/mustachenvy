@@ -8,7 +8,6 @@ use LightnCandy\LightnCandy;
 use MyShoppress\DevOp\MustacheEnvy\Partial\PartialResolver as DefaultParitalResolver;
 use MyShoppress\DevOp\MustacheEnvy\Partial\ResolverInterface as PartialResolver;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ProviderInterface as HelperProvider;
-use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ResolverInterface as HelperResolver;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\TemplateHelper;
 
 class Compiler
@@ -20,8 +19,6 @@ class Compiler
     private array $compileOptions;
 
     private PartialResolver $partialResolver;
-
-    private HelperResolver $helperResolver;
 
     private HelperProvider $helperProvider;
 
@@ -37,7 +34,6 @@ class Compiler
 
         $this->partialResolver = new DefaultParitalResolver;
         $this->helperProvider = new TemplateHelper;
-        $this->helperResolver = new TemplateHelper;
     }
 
     public function addPartialSearchPath(string $name): void
@@ -48,7 +44,6 @@ class Compiler
     public function compile(string $template): \Closure
     {
         $this->compileOptions['partialresolver'] = fn ($ctx, $name) => $this->partialResolver->resolvePartial($name);
-        $this->compileOptions['helperresolver'] = [$this->helperResolver, 'resolve'];
         $this->compileOptions['helpers'] = $this->helperProvider->getHelpers();
 
         $compiledCode = LightnCandy::compile($template,$this->compileOptions);

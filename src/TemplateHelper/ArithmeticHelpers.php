@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
-class ArithmeticHelpers extends AbstractHelper
+class ArithmeticHelpers extends OperatorHelpers
 {
 
     public function getHelper(): \Closure
