@@ -5,17 +5,15 @@ declare(strict_types = 1);
 namespace MyShoppress\DevOp\MustacheEnvy;
 
 use LightnCandy\Runtime;
-use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\FileHelpers;
 
 class TemplateEngine
 {
 
     private Compiler $compiler;
 
-    public function __construct()
+    public function __construct(?Compiler $compiler = null)
     {
-        $this->compiler = new Compiler;
-        FileHelpers::setCompiler($this->compiler);
+        $this->compiler = $compiler ?? new Compiler;
     }
 
     /**

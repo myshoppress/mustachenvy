@@ -19,7 +19,8 @@
     "phpstan/extension-installer": "^1.1",
     "phpstan/phpstan-strict-rules": "^0.12.9",
     "phpstan/phpstan-webmozart-assert": "^0.12.12",
-    "phpunit/phpunit": "^9.5"
+    "phpunit/phpunit": "^9.5",
+    "mikey179/vfsstream": "^1.6"
   },
   "bin": [
     ""

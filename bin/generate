@@ -10,6 +10,7 @@ use MyShoppress\DevOp\MustacheEnvy\OutputHandler;
 use MyShoppress\DevOp\MustacheEnvy\Renderer;
 use MyShoppress\DevOp\MustacheEnvy\TemplateEngine;
 use MyShoppress\DevOp\MustacheEnvy\TemplateFiles;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\FileHelpers;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,7 +21,7 @@ use Webmozart\Assert\Assert;
 
 (new SingleCommandApplication)
     ->setName('Generate')
-    ->addOption('template-file','t', InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file. This option can be omitted if template is provided in STDIN')
+    ->addOption('template-file','t', InputOption::VALUE_REQUIRED,'HandleBar or Mustache template file')
     ->addOption('input-file','i', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,'Read input from input file. Detect input type from the file extension: `yaml` or `yml` for YAML, `.env` for ENV and `.json` for JSON')
     ->addOption('output','o', InputOption::VALUE_REQUIRED,'Output the result into this file instead of stdout')
     ->addOption('clear-env','c',InputOption::VALUE_NONE,'By default ENV values are passed to the template engine. This flag prevents that')
@@ -32,29 +33,22 @@ use Webmozart\Assert\Assert;
         if ( is_array($inputFiles) ) {
             $inputValues->addInputFile($inputFiles);
         }
-        $engine = new TemplateEngine();
+
         /** @var ?string $templateFile */
         $templateFile = $input->getOption('template-file');
         if ( $templateFile === null ) {
-            //read from STDIN
-            if ( \posix_isatty(\STDIN) !== false ) {
-                throw new \UnexpectedValueException(
-                    "Unable to read template from STDIN. Please specify a template",
-                );
-            }
-            $template = stream_get_contents(\STDIN);
-            if ( $template === false ) {
-                throw new \UnexpectedValueException("Unable to read the template from STDIN");
-            }
-        } else {
-            $template = file_get_contents($templateFile);
-            if ( $template === false ) {
-                throw new \UnexpectedValueException(sprintf(
-                  "Unable to read the template file %s", $templateFile
-                ));
-            }
-            $engine->getCompiler()->addPartialSearchPath(dirname($templateFile));
+            throw new \InvalidArgumentException("template-file is missing");
         }
+        $template = file_get_contents($templateFile);
+        if ( $template === false ) {
+            throw new \UnexpectedValueException(sprintf(
+                "Unable to read the template file %s", $templateFile
+            ));
+        }
+        $engine = new TemplateEngine();
+        $fileHelpers = new FileHelpers($engine->getCompiler(), dirname($templateFile));
+        $engine->getCompiler()->addHelpers($fileHelpers);
+
         $data = $engine->render($template, $inputValues->getArrayCopy());
         /** @var ?string $outputFile */
         $outputFile = $input->getOption('output');

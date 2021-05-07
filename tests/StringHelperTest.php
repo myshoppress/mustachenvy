@@ -40,4 +40,10 @@ class StringHelperTest extends TestCase
         self::assertEquals("$23", self::render('{{preg_replace "/[a-z]+(\d+)/" "$\1" "abc23"}}'));
     }
 
+    public function testStringConcat(): void
+    {
+        self::render('{{ concat "A" "B" separator="," }}');
+        self::assertEquals(self::$result,"A,B");
+    }
+
 }

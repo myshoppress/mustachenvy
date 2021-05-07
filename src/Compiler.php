@@ -5,10 +5,14 @@ declare(strict_types = 1);
 namespace MyShoppress\DevOp\MustacheEnvy;
 
 use LightnCandy\LightnCandy;
-use MyShoppress\DevOp\MustacheEnvy\Partial\PartialResolver as DefaultParitalResolver;
-use MyShoppress\DevOp\MustacheEnvy\Partial\ResolverInterface as PartialResolver;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ArithmeticHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ComparisonHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\EmbededDataHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\LogicalHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ProviderInterface as HelperProvider;
-use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\TemplateHelper;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\StringHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\TernaryOperatorHelper;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\VariableHelpers;
 
 class Compiler
 {
@@ -18,9 +22,10 @@ class Compiler
      */
     private array $compileOptions;
 
-    private PartialResolver $partialResolver;
-
-    private HelperProvider $helperProvider;
+    /**
+     * @var array<string, callable>
+     */
+    private array $helpers = [];
 
     public function __construct()
     {
@@ -32,20 +37,26 @@ class Compiler
             | LightnCandy::FLAG_NOESCAPE
             ;
 
-        $this->partialResolver = new DefaultParitalResolver;
-        $this->helperProvider = new TemplateHelper;
+        $this
+            ->addHelpers(new StringHelpers)
+            ->addHelpers(new ArithmeticHelpers)
+            ->addHelpers(new LogicalHelpers)
+            ->addHelpers(new ComparisonHelpers)
+            ->addHelpers(new VariableHelpers)
+            ->addHelpers(new EmbededDataHelpers)
+            ->addHelpers(new TernaryOperatorHelper)
+        ;
     }
 
-    public function addPartialSearchPath(string $name): void
+    public function addHelpers(HelperProvider $provider): self
     {
-        $this->partialResolver->addSearchPath($name);
+        $this->helpers = \array_merge($this->helpers, $provider->getHelpers());
+        return $this;
     }
 
     public function compile(string $template): \Closure
     {
-        $this->compileOptions['partialresolver'] = fn ($ctx, $name) => $this->partialResolver->resolvePartial($name);
-        $this->compileOptions['helpers'] = $this->helperProvider->getHelpers();
-
+        $this->compileOptions['helpers'] = $this->helpers;
         $compiledCode = LightnCandy::compile($template,$this->compileOptions);
         return eval($compiledCode);
     }
