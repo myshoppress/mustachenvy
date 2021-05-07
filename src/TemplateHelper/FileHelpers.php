@@ -15,8 +15,6 @@ class FileHelpers implements ProviderInterface
 
     use PHPFunctionsWrapperTrait;
 
-    private const CIRCULAR_MAX_COUNT=20;
-
     static private Compiler $compiler;
 
     /**
@@ -123,7 +121,6 @@ class FileHelpers implements ProviderInterface
      */
     static private function checkForCircularImport(string $path): void
     {
-        $circularUsage = 0;
         $stack = clone self::$paths;
 
         while(\count($stack)) {
@@ -134,13 +131,9 @@ class FileHelpers implements ProviderInterface
                 continue;
             }
 
-            if ( $circularUsage >= self::CIRCULAR_MAX_COUNT ) {
-                throw new \InvalidArgumentException(
-                    \sprintf("Circular importing. File %s has already been imported",$path),
-                );
-            }
-
-            $circularUsage++;
+            throw new \InvalidArgumentException(
+                \sprintf("Circular importing. File %s has already been imported",$path),
+            );
         }
     }
 
