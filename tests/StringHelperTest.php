@@ -35,6 +35,11 @@ class StringHelperTest extends TestCase
         );
     }
 
+    public function testNegatingEmpty(): void
+    {
+        self::assertEquals("this is not empty",self::render('{{#-strlen "" }}this is not empty{{/-strlen}}'));
+    }
+
     public function testPregReplace(): void
     {
         self::assertEquals("$23", self::render('{{preg_replace "/[a-z]+(\d+)/" "$\1" "abc23"}}'));

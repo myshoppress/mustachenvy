@@ -17,7 +17,20 @@ trait PHPFunctionsWrapperTrait
     static public function callPHPFunction(...$args)
     {
         $opts = \array_pop($args);
-        $result = \call_user_func_array($opts['name'], $args);
+        $name = $opts['name'];
+        $negate = false;
+
+        if (\substr($name,0,1)==='-') {
+            $name = \substr($name, 1);
+            $negate = true;
+        }
+
+        $result = \call_user_func_array($name, $args);
+
+        if ( $negate ) {
+            $result = !(bool)$result;
+        }
+
         $result = (bool)$result && isset($opts['fn'])
             ? $opts['fn']()
             : $result;
@@ -29,7 +42,10 @@ trait PHPFunctionsWrapperTrait
      */
     static protected function wrapPHPFunctions(string ...$functions): array
     {
-        Assert::allIsCallable($functions);
+        $uniqFns = \array_unique(
+            \array_map(static fn ($f) => \substr($f,0,1) === '-' ? \substr($f,1) : $f, $functions),
+        );
+        Assert::allIsCallable($uniqFns);
         return \array_fill_keys($functions, castCallable(static::class.'::callPHPFunction'));
     }
 

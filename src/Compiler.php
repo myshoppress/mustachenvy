@@ -8,6 +8,7 @@ use LightnCandy\LightnCandy;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ArithmeticHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ComparisonHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\EmbededDataHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ErrorTemplateHelper;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\LogicalHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ProviderInterface as HelperProvider;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\StringHelpers;
@@ -45,6 +46,7 @@ class Compiler
             ->addHelpers(new VariableHelpers)
             ->addHelpers(new EmbededDataHelpers)
             ->addHelpers(new TernaryOperatorHelper)
+            ->addHelpers(new ErrorTemplateHelper)
         ;
     }
 
