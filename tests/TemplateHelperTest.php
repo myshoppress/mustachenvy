@@ -21,15 +21,6 @@ class TemplateHelperTest extends TestCase
         self::assertEquals($result,"Hello");
     }
 
-    public function testArithmeticHelper(): void
-    {
-        $template = new TemplateEngine;
-        $result = $template->render('{{add 1 1 }}');
-        self::assertEquals(2, $result);
-        $result = $template->render('{{sub 10 8 (mul 2 3) }}');
-        self::assertEquals(-4, $result);
-    }
-
     public function testTemplateHelperRequiredException(): void
     {
         $template = "{{ required VAR1 'VAR1 can not be null' }}";

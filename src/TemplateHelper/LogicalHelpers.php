@@ -24,23 +24,29 @@ class LogicalHelpers extends OperatorHelpers
                 throw new \UnexpectedValueException(\sprintf("%s requires at least two operands", $opts['name']));
             }
 
-            $iVal = (bool)\array_shift($args);
-            /** @var array<bool> $list */
-            $list = $args;
+            $args = \array_map(static fn ($i): bool => (bool)$i, $args);
 
             switch ($opts['name']) {
                 case 'and' :
-                    return \array_reduce($list, static fn ($c,$i) => $c && $i,$iVal);
+                    $result = \array_reduce($args,static fn (bool $c,bool $i) => $i && $c, $args[0] );
+                    break;
 
                 case 'or' :
-                    return \array_reduce($list, static fn ($c,$i) => $c || $i,$iVal);
+                    $result = \array_reduce($args,static fn (bool $c,bool $i) => $i && $c, $args[0] );
+                    break;
 
                 case 'xor' :
-                    return \array_reduce($list, static fn ($c,$i) => $c ^ $i,$iVal);
+                    $result = \array_reduce($args,static fn (bool $c,bool $i) => $i && $c, !$args[0]);
+                    break;
 
                 default:
                     throw new \UnexpectedValueException(\sprintf("%s is an invalid operation", $opts['name']));
             }
+
+            $result = $result && isset($opts['fn'])
+                ? $opts['fn']()
+                : $result;
+            return $result;
         };
     }
 

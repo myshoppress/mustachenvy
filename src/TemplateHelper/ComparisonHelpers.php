@@ -9,7 +9,7 @@ class ComparisonHelpers extends OperatorHelpers
 
     public function getHelper(): \Closure
     {
-        return static function (...$args): bool {
+        return static function (...$args) {
             $opts = \array_pop($args);
 
             if ( \count($args) !== 2 ) {
@@ -20,34 +20,37 @@ class ComparisonHelpers extends OperatorHelpers
 
             switch ($opts['name']) {
                 case 'eq' :
-                    if ( !\is_numeric($a) || !\is_numeric($b) ) {
-                        return \strcmp($a, $b) === 0;
-                    }
-
-                    return (int)$a === (int)$b;
+                    $result = $a === $b;
+                    break;
 
                 case 'neq' :
-                    if ( !\is_numeric($a) || !\is_numeric($b) ) {
-                        return \strcmp($a, $b) !== 0;
-                    }
-
-                    return (int)$a !== (int)$b;
+                    $result = $a !== $b;
+                    break;
 
                 case 'lt' :
-                    return $a < $b;
+                    $result = $a < $b;
+                    break;
 
                 case 'lte' :
-                    return $a <= $b;
+                    $result = $a <= $b;
+                    break;
 
                 case 'gt' :
-                    return $a > $b;
+                    $result = $a > $b;
+                    break;
 
                 case 'gte' :
-                    return $a >= $b;
+                    $result = $a >= $b;
+                    break;
 
                 default:
                     throw new \UnexpectedValueException(\sprintf("%s is an invalid comparison", $opts['name']));
             }
+
+            $result = $result && isset($opts['fn'])
+                ? $opts['fn']()
+                : $result;
+            return $result;
         };
     }
 

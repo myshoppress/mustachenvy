@@ -29,7 +29,8 @@
       "./src/functions.php"
     ],
     "psr-4": {
-      "MyShoppress\\DevOp\\MustacheEnvy\\" : "./src"
+      "MyShoppress\\DevOp\\MustacheEnvy\\" : "./src",
+      "MyShoppress\\DevOp\\MustacheEnvy\\Tests\\" : "./tests"
     }
   },
   "scripts": {
