@@ -20,7 +20,7 @@ class TemplateHelper implements ProviderInterface
             ->addHelperProvider(new LogicalHelpers)
             ->addHelperProvider(new ComparisonHelpers)
             ->addHelperProvider(new VariableHelpers)
-            ->addHelperProvider(new FormatBlockHelpers)
+            ->addHelperProvider(new EmbededDataHelpers)
             ->addHelperProvider(new TernaryOperatorHelper)
             ->addHelperProvider(new FileHelpers)
         ;

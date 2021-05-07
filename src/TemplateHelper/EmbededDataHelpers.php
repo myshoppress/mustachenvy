@@ -7,7 +7,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 use Symfony\Component\Yaml\Yaml;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class FormatBlockHelpers implements ProviderInterface
+class EmbededDataHelpers implements ProviderInterface
 {
 
     /**

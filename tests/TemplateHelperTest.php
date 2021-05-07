@@ -12,40 +12,6 @@ class TemplateHelperTest extends TestCase
 
     static protected string $result = '';
 
-    public function testTemplateHelperRequiredReturnValue(): void
-    {
-        $renderer = new TemplateEngine;
-        $result = $renderer->render('{{ required VAR1 }}',['VAR1'=>'hello']);
-        self::assertEquals($result,'hello');
-    }
-
-    public function testTemplateHelperJson(): void
-    {
-        $template = <<<'EOF'
-{{#json 'List' }}
-[
- {"id":1,"name":"John"},
- {"id":2,"name":"Jody"}
-]
-{{/json}}
-{{#each List }}
-Name is {{name}}
-{{/each}}
-{{#each (json "[1,2]") }}
-Index {{@index}}
-{{/each}}
-EOF;
-        $renderer = new TemplateEngine;
-        $output = $renderer->render($template);
-        $assert = <<<'EOF'
-Name is John
-Name is Jody
-Index 0
-Index 1
-EOF;
-        self::assertStringContainsString($assert, $output);
-    }
-
     public function testTempalteHelperOperands(): void
     {
         $template = <<<'EOF'
