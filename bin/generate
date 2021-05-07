@@ -46,7 +46,7 @@ use Webmozart\Assert\Assert;
             ));
         }
         $engine = new TemplateEngine();
-        $fileHelpers = new FileHelpers($engine->getCompiler(), dirname($templateFile));
+        $fileHelpers = new FileHelpers($engine->getCompiler(), $templateFile);
         $engine->getCompiler()->addHelpers($fileHelpers);
 
         $data = $engine->render($template, $inputValues->getArrayCopy());

@@ -2,6 +2,6 @@ Template 3
 {{#if (gt 2 1) ~}}
     {{import "./template4.hbs" }}
 {{/if}}
-{{#-preg_match "/(nginx|php-fpm)/" (default $ "service" "") }}
+{{#-preg_match "/(nginx|php-fpm)/" (@ $ "service" ) }}
     hello
 {{/-preg_match}}

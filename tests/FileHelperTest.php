@@ -20,25 +20,28 @@ class FileHelperTest extends TestCase
             'sub_dir' => [
                 'file2' => 'file2 content',
             ],
+            'file3' => '{{ import "file4" }}',
+            'file4' => '{{ import "file3"}} ',
         ]);
-        $this->template = new TemplateEngine;
-        $this->template->getCompiler()->addHelpers(new FileHelpers($this->template->getCompiler(), $this->root));
     }
 
     public function testPathJoin(): void
     {
-        self::assertEquals("/path1/path2/path3", $this->template->render('{{path_join "/path1" "/path2/" "/path3"}}'));
+        self::assertEquals(
+            "/path1/path2/path3",
+            $this->getTemplate()->render('{{path_join "/path1" "/path2/" "/path3"}}'),
+        );
     }
 
     public function testImportingRelativePath(): void
     {
-        $result = $this->template->render('{{ import "file1" }}');
+        $result = $this->getTemplate()->render('{{ import "file1" }}');
         self::assertEquals('file2 content', $result);
     }
 
     public function testImportingAbsPath(): void
     {
-        $result = $this->template->render("{{ import '{$this->root}/file1' }}");
+        $result = $this->getTemplate()->render("{{ import '{$this->root}/file1' }}");
         self::assertEquals('file2 content', $result);
     }
 
@@ -49,39 +52,59 @@ class FileHelperTest extends TestCase
 fall back text
 {{/import}}
 EOF;
-        $result = $this->template->render($string);
+        $result = $this->getTemplate()->render($string);
         self::assertStringContainsString("fall back text", $result);
     }
 
     public function testImportingInvalidPath(): void
     {
         self::expectExceptionMessage("is not a file");
-        $this->template->render('{{ import "invalid_path" }}');
+        $this->getTemplate()->render('{{ import "invalid_path" }}');
     }
 
     public function testPathNotExists(): void
     {
-        self::assertEmpty($this->template->render('{{ path_exists "invalid_path" }}'));
+        self::assertEmpty($this->getTemplate()->render('{{ path_exists "invalid_path" }}'));
     }
 
     public function testRelativeFileExists(): void
     {
-        self::assertNotEmpty($this->template->render('{{ path_exists "sub_dir" "file2" }}'));
+        self::assertNotEmpty($this->getTemplate()->render('{{ path_exists "sub_dir" "file2" }}'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @small
+     */
+    public function testCircularImport(): void
+    {
+        self::expectExceptionMessage("Circular importing");
+        $this->getTemplate()->render("{{ import 'file3' }}");
     }
 
     public function testRelativeDirectoryExists(): void
     {
-        self::assertNotEmpty($this->template->render('{{ path_exists "sub_dir" }}'));
+        self::assertNotEmpty($this->getTemplate()->render('{{ path_exists "sub_dir" }}'));
     }
 
     public function testPathExistsWithBlock(): void
     {
-        $result = $this->template->render(<<<'EOF'
+        $result = $this->getTemplate()->render(<<<'EOF'
 {{#path_exists "sub_dir"}}
 sub_dir exists
 {{/path_exists}}
 EOF,
 ); self::assertStringContainsString("sub_dir exists", $result);
+    }
+
+    public function getTemplate(): TemplateEngine
+    {
+        if ( !isset($this->template) ) {
+            $this->template = new TemplateEngine;
+            $this->template->getCompiler()->addHelpers(new FileHelpers($this->template->getCompiler(), $this->root));
+        }
+
+        return $this->template;
     }
 
 }

@@ -51,4 +51,18 @@ class StringHelperTest extends TestCase
         self::assertEquals(self::$result,"A,B");
     }
 
+    public function testNullArgument(): void
+    {
+        self::assertEmpty(
+            self::render('{{preg_match "/[a-z]/" (@ NULL_VAR)}}'),
+        );
+    }
+
+    public function testNoneNullArgument(): void
+    {
+        self::assertNotEmpty(
+            self::render('{{preg_match "/[a-z]/" (@ NULL_VAR)}}',['NULL_VAR'=>'a']),
+        );
+    }
+
 }

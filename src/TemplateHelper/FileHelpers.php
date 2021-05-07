@@ -15,6 +15,8 @@ class FileHelpers implements ProviderInterface
 
     use PHPFunctionsWrapperTrait;
 
+    private const CIRCULAR_MAX_COUNT=20;
+
     static private Compiler $compiler;
 
     /**
@@ -69,9 +71,9 @@ class FileHelpers implements ProviderInterface
 
         if ( $compileContent )
         {
-            self::$paths->push(\dirname($path));
+            self::checkForCircularImport($path);
+            self::$paths->push($path);
             $renderer = self::$compiler->compile($content);
-            self::$paths->pop();
             unset($hash['compile'], $hash['error_on_invalid'], $hash['merge_vars']);
             $vars = $mergeVar
                 ? \array_merge($opts['_this'], $hash)
@@ -79,6 +81,7 @@ class FileHelpers implements ProviderInterface
             $content = $renderer($vars,[
                 'debug' => Runtime::DEBUG_ERROR_EXCEPTION,
             ]);
+            self::$paths->pop();
         }
 
         return $content;
@@ -115,6 +118,32 @@ class FileHelpers implements ProviderInterface
             : $result;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
+    static private function checkForCircularImport(string $path): void
+    {
+        $circularUsage = 0;
+        $stack = clone self::$paths;
+
+        while(\count($stack)) {
+            $prevPath = $stack->pop();
+
+            //allows for circular import up to 20 times in case the conditions have changed
+            if ( $prevPath !== $path ) {
+                continue;
+            }
+
+            if ( $circularUsage >= self::CIRCULAR_MAX_COUNT ) {
+                throw new \InvalidArgumentException(
+                    \sprintf("Circular importing. File %s has already been imported",$path),
+                );
+            }
+
+            $circularUsage++;
+        }
+    }
+
     private static function getPath(string $path): ?string
     {
         //check if path exist.
@@ -124,6 +153,11 @@ class FileHelpers implements ProviderInterface
 
         //check if path exists relative to the last path inserted into stack
         $base = self::$paths->top();
+
+        if ( \is_file($base) ) {
+            $base = \dirname($base);
+        }
+
         $newPath = $base.'/'.$path;
         return \file_exists($newPath)
             ? $newPath

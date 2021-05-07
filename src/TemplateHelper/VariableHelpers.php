@@ -15,6 +15,7 @@ class VariableHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         return [
+            '@' => castCallable(static::class.'::emptyString'),
             '$' => castCallable(static::class.'::dotEnvVariable'),
             'required' => castCallable(static::class.'::required'),
             'default' => castCallable(static::class.'::default'),
@@ -46,6 +47,17 @@ class VariableHelpers implements ProviderInterface
         }
 
         return $dotValue ?? $envValue;
+    }
+
+    /**
+     * @param mixed ...$args
+     * @return mixed|string
+     */
+    static public function emptyString(...$args)
+    {
+        \array_pop($args);
+        [$value] = $args;
+        return $value ?? "";
     }
 
     /**
@@ -83,6 +95,5 @@ class VariableHelpers implements ProviderInterface
 
         return $value;
     }
-
 
 }
