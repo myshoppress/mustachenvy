@@ -7,7 +7,8 @@
     "symfony/console": "^5.2",
     "webmozart/assert": "^1.10",
     "m1/env": "^2.2",
-    "symfony/yaml": "^5.2"
+    "symfony/yaml": "^5.2",
+    "symfony/process": "^5.3"
   },
   "require-dev": {
     "php" : "^7.4",

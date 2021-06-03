@@ -6,6 +6,7 @@ namespace MyShoppress\DevOp\MustacheEnvy;
 
 use LightnCandy\LightnCandy;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ArithmeticHelpers;
+use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\CommandHelper;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ComparisonHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\EmbededDataHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\ErrorTemplateHelper;
@@ -43,10 +44,11 @@ class Compiler
             ->addHelpers(new ArithmeticHelpers)
             ->addHelpers(new LogicalHelpers)
             ->addHelpers(new ComparisonHelpers)
-            ->addHelpers(new VariableHelpers)
+            ->addHelpers(new VariableHelpers($this))
             ->addHelpers(new EmbededDataHelpers)
             ->addHelpers(new TernaryOperatorHelper)
             ->addHelpers(new ErrorTemplateHelper)
+            ->addHelpers(new CommandHelper)
         ;
     }
 

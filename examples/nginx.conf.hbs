@@ -5,7 +5,7 @@ upstream php {
     server unix:/var/run/php/php-fpm.sock;
 }
 
-{{> "_partial.conf.hbs" }}
+{{ import "_partial.conf.hbs" }}
 
 {{#*inline serverConf}}
 

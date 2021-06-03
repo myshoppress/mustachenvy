@@ -4,10 +4,18 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
+use MyShoppress\DevOp\MustacheEnvy\Compiler;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
 class VariableHelpers implements ProviderInterface
 {
+
+    static private Compiler $compiler;
+
+    public function __construct(Compiler $compiler)
+    {
+        self::$compiler = $compiler;
+    }
 
     /**
      * @return array<string, callable>
@@ -29,7 +37,7 @@ class VariableHelpers implements ProviderInterface
     static public function dotEnvVariable(...$args)
     {
         $opt = \array_pop($args);
-        [$varName] = $args;
+        [$varName, $defaultValue] = $args + [null, null];
 
         if ( $varName === '') {
             throw new \InvalidArgumentException("Variable name can not be empty");
@@ -46,7 +54,14 @@ class VariableHelpers implements ProviderInterface
             $data = $data[$k] ?? [];
         }
 
-        return $dotValue ?? $envValue;
+        $resolvedValue = $dotValue ?? $envValue ?? $defaultValue;
+
+        if ( \strpos($resolvedValue, '{{') !== false ) {
+            $renderer = self::$compiler->compile($resolvedValue);
+            $resolvedValue = $renderer($data);
+        }
+
+        return $resolvedValue;
     }
 
     /**
