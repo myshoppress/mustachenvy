@@ -9,7 +9,7 @@ class VarHelperTest extends TestCase
 
     public function testEmptyRequiredVar(): void
     {
-        self::expectDeprecationMessage('VAR1 can not be null');
+        self::expectExceptionMersage('VAR1 can not be null');
         self::render("{{ required VAR1 'VAR1 can not be null' }}");
     }
 
