@@ -26,7 +26,7 @@ class EmbededDataHelpers implements ProviderInterface
      * @return string|void
      * @throws \JsonException
      */
-    public function json(...$args)
+    static public function json(...$args)
     {
         $opts = \array_pop($args);
 
@@ -50,7 +50,7 @@ class EmbededDataHelpers implements ProviderInterface
      * @param mixed ...$args
      * @return string|void
      */
-    public function yaml(...$args)
+    static public function yaml(...$args)
     {
         $opts = \array_pop($args);
 

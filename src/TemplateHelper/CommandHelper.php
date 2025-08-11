@@ -23,7 +23,7 @@ class CommandHelper implements ProviderInterface
     /**
      * @param mixed ...$args
      */
-    public function cmd(...$args): string
+    static public function cmd(...$args): string
     {
         \array_pop($args);
         $process = new Process($args);
