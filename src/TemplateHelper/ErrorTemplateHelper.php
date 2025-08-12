@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
-class ErrorTemplateHelper implements ProviderInterface
+final class ErrorTemplateHelper implements ProviderInterface
 {
 
     /**
@@ -17,8 +17,9 @@ class ErrorTemplateHelper implements ProviderInterface
                 \array_pop($args);
                 [$msg, $cond] = [
                     $args[0] ?? throw new \InvalidArgumentException("no error message provided"),
-                    $args[1] ?? true
+                    $args[1] ?? true,
                 ];
+
                 if ( $cond ) {
                     throw new \RuntimeException($msg);
                 }

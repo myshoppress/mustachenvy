@@ -6,7 +6,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class TernaryOperatorHelper implements ProviderInterface
+final class TernaryOperatorHelper implements ProviderInterface
 {
 
     /**
@@ -14,14 +14,10 @@ class TernaryOperatorHelper implements ProviderInterface
      */
     public function getHelpers(): array
     {
-        return ['?:' => castCallable(static::class.'::ternary')];
+        return ['?:' => castCallable(self::class.'::ternary')];
     }
 
-    /**
-     * @param mixed ...$args
-     * @return mixed
-     */
-    static public function ternary(...$args)
+    static public function ternary(mixed ...$args): mixed
     {
         \array_pop($args);
 

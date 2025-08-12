@@ -7,7 +7,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 use MyShoppress\DevOp\MustacheEnvy\TemplateEngine;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\FileHelpers;
 
-class FileHelperTest extends TestCase
+final class FileHelperTest extends TestCase
 {
 
     private TemplateEngine $template;
@@ -17,11 +17,11 @@ class FileHelperTest extends TestCase
     {
         $this->root =self::vf([
             'file1' => '{{ import "./sub_dir/file2" }}' ,
+            'file3' => '{{ import "file4" }}',
+            'file4' => '{{ import "file3"}} ',
             'sub_dir' => [
                 'file2' => 'file2 content',
             ],
-            'file3' => '{{ import "file4" }}',
-            'file4' => '{{ import "file3"}} ',
         ]);
     }
 

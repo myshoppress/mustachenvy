@@ -6,7 +6,7 @@ namespace MyShoppress\DevOp\MustacheEnvy;
 
 use LightnCandy\Runtime;
 
-class TemplateEngine
+final class TemplateEngine
 {
 
     private Compiler $compiler;

@@ -12,7 +12,7 @@ use MyShoppress\DevOp\MustacheEnvy\InputFileParser\Parser;
  *
  * @extends ArrayObject<string, mixed>
  */
-class InputValues extends ArrayObject
+final class InputValues extends ArrayObject
 {
 
     private Parser $fileParser;
@@ -37,7 +37,7 @@ class InputValues extends ArrayObject
     /**
      * @param array<string>|string $files
      */
-    public function addInputFile($files): void
+    public function addInputFile(array|string $files): void
     {
         $values = $this->getArrayCopy();
 

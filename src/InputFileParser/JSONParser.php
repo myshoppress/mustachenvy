@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\InputFileParser;
 
-class JSONParser implements ParserInterface
+final class JSONParser implements ParserInterface
 {
 
     /**

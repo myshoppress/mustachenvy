@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class OperatorHelperTest extends TestCase
+final class OperatorHelperTest extends TestCase
 {
 
     public function testArithmeticHelper(): void

@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy;
 
-class InputParser
+final class InputParser
 {
 
-    public const ORDER_FLAG_ENVVALUE = 'e';
-    public const ORDER_FLAG_KVPAIR = 'k';
-    public const ORDER_FLAG_FILE = 'f';
+    public const string ORDER_FLAG_ENVVALUE = 'e';
+    public const string ORDER_FLAG_KVPAIR = 'k';
+    public const string ORDER_FLAG_FILE = 'f';
 
     /**
      * @var array <string,scalar>

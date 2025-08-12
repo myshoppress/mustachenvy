@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class EmbededDataHelperTest extends TestCase
+final class EmbededDataHelperTest extends TestCase
 {
 
     public function testTemplateHelperJson(): void

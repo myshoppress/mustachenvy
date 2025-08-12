@@ -7,10 +7,10 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 use MyShoppress\DevOp\MustacheEnvy\Compiler;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class VariableHelpers implements ProviderInterface
+final class VariableHelpers implements ProviderInterface
 {
 
-    static private Compiler $compiler;
+    private static Compiler $compiler;
 
     public function __construct(Compiler $compiler)
     {
@@ -23,18 +23,14 @@ class VariableHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         return [
-            '@' => castCallable(static::class.'::emptyString'),
-            '$' => castCallable(static::class.'::dotEnvVariable'),
-            'required' => castCallable(static::class.'::required'),
-            'default' => castCallable(static::class.'::default'),
+            '$' => castCallable(self::class.'::dotEnvVariable'),
+            '@' => castCallable(self::class.'::emptyString'),
+            'default' => castCallable(self::class.'::default'),
+            'required' => castCallable(self::class.'::required'),
         ];
     }
 
-    /**
-     * @param mixed ...$args
-     * @return mixed|null
-     */
-    static public function dotEnvVariable(...$args)
+    static public function dotEnvVariable(mixed ...$args): mixed
     {
         $opt = \array_pop($args);
         [$varName, $defaultValue] = $args + [null, null];
@@ -64,22 +60,14 @@ class VariableHelpers implements ProviderInterface
         return $resolvedValue;
     }
 
-    /**
-     * @param mixed ...$args
-     * @return mixed|string
-     */
-    static public function emptyString(...$args)
+    static public function emptyString(mixed ...$args): mixed
     {
         \array_pop($args);
         [$value] = $args;
         return $value ?? "";
     }
 
-    /**
-     * @param mixed ...$args
-     * @return mixed
-     */
-    static public function default(...$args)
+    static public function default(mixed ...$args): mixed
     {
         \array_pop($args);
 
@@ -94,11 +82,9 @@ class VariableHelpers implements ProviderInterface
     }
 
     /**
-     * @param mixed ...$args
      * @throws \ErrorException
-     * @return mixed
      */
-    static public function required(...$args)
+    static public function required(mixed ...$args): mixed
     {
         \array_pop($args);
         [$value, $errorMessage] = $args;

@@ -6,7 +6,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\InputFileParser;
 
 use Symfony\Component\Yaml\Yaml;
 
-class YAMLParser implements ParserInterface
+final class YAMLParser implements ParserInterface
 {
 
     /**

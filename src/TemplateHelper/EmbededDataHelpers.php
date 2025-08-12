@@ -7,7 +7,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 use Symfony\Component\Yaml\Yaml;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class EmbededDataHelpers implements ProviderInterface
+final class EmbededDataHelpers implements ProviderInterface
 {
 
     /**
@@ -16,17 +16,15 @@ class EmbededDataHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         return [
-            'json' => castCallable(static::class.'::json'),
-            'yaml' => castCallable(static::class.'::yaml'),
+            'json' => castCallable(self::class.'::json'),
+            'yaml' => castCallable(self::class.'::yaml'),
         ];
     }
 
     /**
-     * @param mixed ...$args
-     * @return string|void
      * @throws \JsonException
      */
-    static public function json(...$args)
+    static public function json(mixed ...$args): string|null
     {
         $opts = \array_pop($args);
 
@@ -44,13 +42,10 @@ class EmbededDataHelpers implements ProviderInterface
         $json = \json_decode($opts['fn'](), true, 512, \JSON_THROW_ON_ERROR);
         unset($opts['fn']);
         $opts['_this'][$varName] = $json;
+        return null;
     }
 
-    /**
-     * @param mixed ...$args
-     * @return string|void
-     */
-    static public function yaml(...$args)
+    static public function yaml(mixed ...$args): string|null
     {
         $opts = \array_pop($args);
 
@@ -67,6 +62,7 @@ class EmbededDataHelpers implements ProviderInterface
         $varName = $args[0];
         $yaml = Yaml::parse($opts['fn']());
         $opts['_this'][$varName] = $yaml;
+        return null;
     }
 
 }

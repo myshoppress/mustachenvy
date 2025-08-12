@@ -6,7 +6,7 @@ use MyShoppress\DevOp\MustacheEnvy\InputFileParser\Parser;
 use MyShoppress\DevOp\MustacheEnvy\InputValues;
 use PHPUnit\Framework\TestCase;
 
-class InputFileTest extends TestCase
+final class InputFileTest extends TestCase
 {
 
     public function testParsingInputFile(): void

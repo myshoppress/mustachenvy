@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\InputFileParser;
 
-class Parser implements ParserInterface
+final class Parser implements ParserInterface
 {
 
     /**

@@ -6,7 +6,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\InputFileParser;
 
 use M1\Env\Parser;
 
-class ENVParser implements ParserInterface
+final class ENVParser implements ParserInterface
 {
 
     /**

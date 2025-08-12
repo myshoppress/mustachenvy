@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy;
 
-class OutputHandler
+final class OutputHandler
 {
 
     static public function output(string $outputFile, string $data): void

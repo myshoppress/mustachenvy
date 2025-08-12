@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class ErrorHelperTest extends TestCase
+final class ErrorHelperTest extends TestCase
 {
 
     public function testError(): void

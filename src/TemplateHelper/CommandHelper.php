@@ -7,7 +7,7 @@ namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 use Symfony\Component\Process\Process;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class CommandHelper implements ProviderInterface
+final class CommandHelper implements ProviderInterface
 {
 
     /**
@@ -16,14 +16,11 @@ class CommandHelper implements ProviderInterface
     public function getHelpers(): array
     {
         return [
-            'cmd' => castCallable(static::class.'::cmd'),
+            'cmd' => castCallable(self::class.'::cmd'),
         ];
     }
 
-    /**
-     * @param mixed ...$args
-     */
-    static public function cmd(...$args): string
+    static public function cmd(mixed ...$args): string
     {
         \array_pop($args);
         $process = new Process($args);

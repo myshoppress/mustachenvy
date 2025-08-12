@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class VarHelperTest extends TestCase
+final class VarHelperTest extends TestCase
 {
 
     public function testEmptyRequiredVar(): void
     {
-        self::expectExceptionMersage('VAR1 can not be null');
+        self::expectExceptionMessage('VAR1 can not be null');
         self::render("{{ required VAR1 'VAR1 can not be null' }}");
     }
 
@@ -33,8 +33,8 @@ class VarHelperTest extends TestCase
     public function testEvaluatingTemplateFragment(): void
     {
         self::render('{{ $ "key1.key2"   }}', [
-            'KEY3' => 4,
             'KEY1_KEY2' => '{{ add 1 4 }}',
+            'KEY3' => 4,
         ]);
         self::assertEquals(5, self::$result);
     }

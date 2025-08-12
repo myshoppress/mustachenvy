@@ -10,11 +10,7 @@ use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 trait PHPFunctionsWrapperTrait
 {
 
-    /**
-     * @param mixed ...$args
-     * @return mixed
-     */
-    static public function callPHPFunction(...$args)
+    static public function callPHPFunction(mixed ...$args): mixed
     {
         $opts = \array_pop($args);
         $name = $opts['name'];

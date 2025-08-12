@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\TemplateHelper;
 
-class ComparisonHelpers extends OperatorHelpers
+final class ComparisonHelpers extends OperatorHelpers
 {
 
     public function getHelper(): \Closure

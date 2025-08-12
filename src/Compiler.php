@@ -16,7 +16,7 @@ use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\StringHelpers;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\TernaryOperatorHelper;
 use MyShoppress\DevOp\MustacheEnvy\TemplateHelper\VariableHelpers;
 
-class Compiler
+final class Compiler
 {
 
     /**

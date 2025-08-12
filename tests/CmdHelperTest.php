@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class CmdHelperTest extends TestCase
+final class CmdHelperTest extends TestCase
 {
 
     public function testEchoCmd(): void

@@ -10,23 +10,29 @@ use SplStack;
 use Webmozart\Assert\Assert;
 use function MyShoppress\DevOp\MustacheEnvy\castCallable;
 
-class FileHelpers implements ProviderInterface
+final class FileHelpers implements ProviderInterface
 {
 
     use PHPFunctionsWrapperTrait;
 
-    static private Compiler $compiler;
+    private static Compiler $compiler;
 
     /**
      * @var SplStack<string>
      */
-    static private SplStack $paths;
+    private static SplStack $paths;
 
     public function __construct(Compiler $compiler, ?string $currentPath = null)
     {
         self::$compiler = $compiler;
         self::$paths = new SplStack;
-        self::$paths->push($currentPath ?? \getcwd());
+        $cwd = $currentPath ?? \getcwd();
+
+        if (\is_bool($cwd)) {
+            return;
+        }
+
+        self::$paths->push($cwd);
     }
 
     /**
@@ -35,22 +41,19 @@ class FileHelpers implements ProviderInterface
     public function getHelpers(): array
     {
         return [
-            'import' => castCallable(static::class.'::importFile'),
-            'path_join' => castCallable(static::class.'::pathJoin'),
-            'path_exists' => castCallable(static::class.'::pathExists'),
+            'import' => castCallable(self::class.'::importFile'),
+            'path_exists' => castCallable(self::class.'::pathExists'),
+            'path_join' => castCallable(self::class.'::pathJoin'),
         ];
     }
 
-    /**
-     * @param mixed ...$args
-     */
-    static public function importFile(...$args): string
+    static public function importFile(mixed ...$args): string
     {
         $opts = \array_pop($args);
         [$file] = $args;
         $hash = $opts['hash'] ?? [];
         $errorOnInvalid = $hash['error_on_invalid'] ?? !isset($opts['fn']);
-        $compileContent = isset(self::$compiler) && ($hash['compile'] ?? true);
+        $compileContent = isset(self::$compiler) && (bool)($hash['compile'] ?? true);
         $mergeVar = $hash['merge_vars'] ?? true;
         $path = self::getPath($file ?? '');
 
@@ -73,7 +76,7 @@ class FileHelpers implements ProviderInterface
             self::$paths->push($path);
             $renderer = self::$compiler->compile($content);
             unset($hash['compile'], $hash['error_on_invalid'], $hash['merge_vars']);
-            $vars = $mergeVar
+            $vars = (bool)$mergeVar
                 ? \array_merge($opts['_this'], $hash)
                 : $hash;
             $content = $renderer($vars,[
@@ -85,10 +88,7 @@ class FileHelpers implements ProviderInterface
         return $content;
     }
 
-    /**
-     * @param mixed ...$args
-     */
-    static public function pathJoin(...$args): ?string
+    static public function pathJoin(mixed ...$args): ?string
     {
         \array_pop($args);
         $path = \implode('/', $args);
@@ -99,11 +99,8 @@ class FileHelpers implements ProviderInterface
 
     /**
      * joins multiple path parts together. it doesn't care of any of parts starts with leading /. It will get rid of it
-     *
-     * @param mixed ...$args
-     * @return string|bool
      */
-    static public function pathExists(...$args)
+    static public function pathExists(mixed ...$args): string|bool
     {
         $opts = \array_pop($args);
         $path = \implode('/', $args);

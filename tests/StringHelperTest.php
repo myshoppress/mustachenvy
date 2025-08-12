@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace MyShoppress\DevOp\MustacheEnvy\Tests;
 
-class StringHelperTest extends TestCase
+final class StringHelperTest extends TestCase
 {
 
     public function testSubstr(): void
