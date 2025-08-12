@@ -9,7 +9,9 @@ clean:
 build-phar: $(BOX) clean
 	echo "Compiling"
 	chmod +x $(BOX)
+	composer install --no-dev
 	./$(BOX) compile
+	composer install
 
 ifdef VER
 
