@@ -24,7 +24,7 @@ final class EmbededDataHelpers implements ProviderInterface
     /**
      * @throws \JsonException
      */
-    static public function json(mixed ...$args): string|null
+    static public function json(mixed ...$args): mixed
     {
         $opts = \array_pop($args);
 
@@ -45,7 +45,7 @@ final class EmbededDataHelpers implements ProviderInterface
         return null;
     }
 
-    static public function yaml(mixed ...$args): string|null
+    static public function yaml(mixed ...$args): mixed
     {
         $opts = \array_pop($args);
 

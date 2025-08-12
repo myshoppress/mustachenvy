@@ -52,7 +52,7 @@ final class VariableHelpers implements ProviderInterface
 
         $resolvedValue = $dotValue ?? $envValue ?? $defaultValue;
 
-        if ( \strpos($resolvedValue, '{{') !== false ) {
+        if ( \strpos((string)$resolvedValue, '{{') !== false ) {
             $renderer = self::$compiler->compile($resolvedValue);
             $resolvedValue = $renderer($data);
         }

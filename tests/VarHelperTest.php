@@ -30,6 +30,12 @@ final class VarHelperTest extends TestCase
         self::assertEquals('hello', self::$result);
     }
 
+    public function testEvaluatingInvalidKey(): void
+    {
+        self::render('{{ $ "key1"   }}', [ ]);
+        self::assertEquals(self::$result, "");
+    }
+
     public function testEvaluatingTemplateFragment(): void
     {
         self::render('{{ $ "key1.key2"   }}', [
